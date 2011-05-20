@@ -1,34 +1,46 @@
 Capistrano::Configuration.instance.load do
   namespace :puppet do
-    task :bootstrap, :only => { :puppet => true } do
+    set :puppet_target, '/home/vagrant/supply_drop'
+    set :puppet_command, 'puppet'
+    set(:puppet_lib) { "#{puppet_target}/modules" }
+    set :puppet_parameters, 'puppet.pp'
+
+    task :bootstrap, :except => { :nopuppet => true } do
       run "#{sudo} apt-get update"
       run "#{sudo} apt-get install -y puppet"
     end
 
-    task :update_code, :only => { :puppet => true } do
-      system "tar zcf supply_drop.tgz --exclude supply_drop.tgz --exclude '.vagrant' --exclude '*.deb' --exclude '.git' ."
-      run "if [ -d ~/supply_drop ]; then rm -r ~/supply_drop; fi && mkdir supply_drop"
-      upload "supply_drop.tgz", "supply_drop/supply_drop.tgz", :via => :scp
-      system "rm supply_drop.tgz"
-      run "cd supply_drop && tar xzf supply_drop.tgz"
+    task :update_code, :except => { :nopuppet => true } do
+      run "rm -rf #{puppet_target}"
+      upload '.', puppet_target, :via => :scp, :recursive => true
     end
 
-    task :noop, :only => { :puppet => true } do
+    task :noop, :except => { :nopuppet => true } do
       update_code
       puppet :noop
     end
 
-    task :apply, :only => { :puppet => true } do
+    task :apply, :except => { :nopuppet => true } do
       update_code
       puppet :apply
     end
   end
 
   def puppet(command = :noop)
+    puppet_cmd = "cd #{puppet_target} && #{sudo} PUPPETLIB=#{puppet_lib} puppet puppet.pp"
     flag = command == :noop ? '--noop' : ''
-    roles.keys.each do |role_name|
-      parallel do |session|
-        session.when "in?(:#{role_name}) && server.options[:puppet]","PUPPETLIB=~/supply_drop/modules puppet #{flag} supply_drop/roles/#{role_name}.pp" 
+
+    outputs = {}
+    begin
+      run "#{puppet_cmd} #{flag}" do |channel, stream, data|
+        outputs[channel[:host]] ||= ""
+        outputs[channel[:host]] << data
+      end
+      logger.debug "Puppet #{command} complete."
+    ensure
+      outputs.each_pair do |host, output|
+        logger.info "Puppet output for #{host}"
+        logger.debug output, "#{host}"
       end
     end
   end
