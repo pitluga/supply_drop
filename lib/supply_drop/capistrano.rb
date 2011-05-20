@@ -5,21 +5,25 @@ Capistrano::Configuration.instance.load do
     set(:puppet_lib) { "#{puppet_target}/modules" }
     set :puppet_parameters, 'puppet.pp'
 
+    desc "installs puppet"
     task :bootstrap, :except => { :nopuppet => true } do
       run "#{sudo} apt-get update"
       run "#{sudo} apt-get install -y puppet"
     end
 
+    desc "pushes the current puppet configuration to the server"
     task :update_code, :except => { :nopuppet => true } do
       run "rm -rf #{puppet_target}"
       upload '.', puppet_target, :via => :scp, :recursive => true
     end
 
+    desc "runs puppet with --noop flag to show changes"
     task :noop, :except => { :nopuppet => true } do
       update_code
       puppet :noop
     end
 
+    desc "applies the current puppet config to the server"
     task :apply, :except => { :nopuppet => true } do
       update_code
       puppet :apply
