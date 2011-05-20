@@ -13,8 +13,11 @@ Capistrano::Configuration.instance.load do
 
     desc "pushes the current puppet configuration to the server"
     task :update_code, :except => { :nopuppet => true } do
-      run "rm -rf #{puppet_target}"
-      upload '.', puppet_target, :via => :scp, :recursive => true
+      find_servers_for_task(current_task).each do |server|
+        rsync_cmd = "rsync -az --delete --exclude=.git -e 'ssh -i #{ssh_options[:keys]}' . #{server.user || user}@#{server.host}:#{puppet_target}/"
+        logger.debug rsync_cmd
+        system rsync_cmd
+      end
     end
 
     desc "runs puppet with --noop flag to show changes"
@@ -31,7 +34,7 @@ Capistrano::Configuration.instance.load do
   end
 
   def puppet(command = :noop)
-    puppet_cmd = "cd #{puppet_target} && #{sudo} PUPPETLIB=#{puppet_lib} puppet puppet.pp"
+    puppet_cmd = "cd #{puppet_target} && #{sudo} PUPPETLIB=#{puppet_lib} puppet #{puppet_parameters}"
     flag = command == :noop ? '--noop' : ''
 
     outputs = {}
