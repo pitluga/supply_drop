@@ -2,7 +2,7 @@ require 'rubygems'
 load 'deploy'
 
 $:.unshift File.expand_path('../../../lib', __FILE__)
-require 'supply_drop/capistrano'
+require 'supply_drop'
 
 vagrant_gem = `gem which vagrant`.chomp
 ssh_options[:keys] =  File.expand_path('../../keys/vagrant', vagrant_gem)
