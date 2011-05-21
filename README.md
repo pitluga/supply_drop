@@ -1,8 +1,8 @@
-= supply_drop
+# supply_drop
 
 supply_drop is a capistrano plugin to facitiate provisioning servers with puppet, without using the puppet server. It works by simply rsyncing your puppet configuration files to your servers and running puppet apply. It strives to allow you to write idiomatic puppet scripts while being as lightweight as possible.
 
-=== Installation
+### Installation
 
     gem install supply_drop
 
@@ -15,7 +15,7 @@ then at the top of your deploy.rb
     require 'rubygems'
     require 'supply_drop'
 
-=== Tasks
+### Tasks
 
     cap puppet:bootstrap
 
@@ -29,7 +29,7 @@ This will show you a list of the pending changes to be applied server-by-server.
 
 Applies the pending changes to all the servers.
 
-=== Variables
+### Variables
 
 There are several variables that can be overriden to change how supply_drop works:
 
@@ -49,10 +49,10 @@ the value of the PUPPETLIB environment variable, the location of your puppet mod
 
 the parameters that are passed to the puppet call.
 
-=== How to contribute
+### How to contribute
 
 If you write anything complicated, write a test for it. Test that your changes work using vagrant. Send a pull request. Easy peezy.
 
-=== Contributors
+### Contributors
 
 Paul Gross [pgr0ss](https://github.com/pgr0ss "github")
