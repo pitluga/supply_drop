@@ -1,3 +1,5 @@
+require 'supply_drop/rsync'
+
 Capistrano::Configuration.instance.load do
   namespace :puppet do
     set :puppet_target, '/home/vagrant/supply_drop'
@@ -14,7 +16,13 @@ Capistrano::Configuration.instance.load do
     desc "pushes the current puppet configuration to the server"
     task :update_code, :except => { :nopuppet => true } do
       find_servers_for_task(current_task).each do |server|
-        rsync_cmd = "rsync -az --delete --exclude=.git -e 'ssh -i #{ssh_options[:keys]}' . #{server.user || user}@#{server.host}:#{puppet_target}/"
+        rsync_cmd = Rsync.command(
+          ".",
+          "#{server.user || user}@#{server.host}:#{puppet_target}/",
+          :delete => true,
+          :excludes => ['.git'],
+          :ssh => { :keys => ssh_options[:keys] }
+        )
         logger.debug rsync_cmd
         system rsync_cmd
       end
