@@ -29,6 +29,10 @@ This will show you a list of the pending changes to be applied server-by-server.
 
 Applies the pending changes to all the servers.
 
+You can specify that one of your servers should be puppet by setting the :nopuppet flag to true, like so. It will then be skipped by all the above commands.
+
+    role :wierd_thing, '33.33.33.33', :nopuppet => true
+
 ### Variables
 
 There are several variables that can be overriden to change how supply_drop works:
