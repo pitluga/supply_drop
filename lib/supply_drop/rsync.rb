@@ -15,7 +15,7 @@ class Rsync
 
     def ssh_options(options)
       mapped_options = options.map do |key, value|
-        if key == :keys
+        if key == :keys && value != nil
           [value].flatten.select { |k| File.exist?(k) }.map { |k| "-i #{k}" }
         end
       end
