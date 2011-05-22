@@ -37,9 +37,13 @@ You can specify that one of your servers should be puppet by setting the :nopupp
 
 There are several variables that can be overriden to change how supply_drop works:
 
-    set :puppet_target, '/tmp/supply_drop'
+    set :puppet_source, '.'
 
-defines where on the server the puppet configurations are synced to.
+defines the base directory containing your puppet configs that will be rsynced to teh servers.
+
+    set :puppet_destination, '/tmp/supply_drop'
+
+defines where on the server the puppet configuration files are synced to.
 
     set :puppet_command, 'puppet'
 
