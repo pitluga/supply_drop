@@ -8,5 +8,5 @@ Gem::Specification.new do |s|
   s.author = "Tony Pitluga"
   s.email = "tony.pitluga@gmail.com"
   s.homepage = "http://github.com/pitluga/supply_drop"
-  s.files = FileList["README.md", "Rakefile", "{lib,examples}/**/*.rb"]
+  s.files = FileList["README.md", "Rakefile", "lib/**/*.rb", "examples/**/*"]
 end
