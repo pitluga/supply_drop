@@ -23,4 +23,9 @@ class RsyncTest < Test::Unit::TestCase
     assert_match /-i #{__FILE__}/, command
   end
 
+  def test_ssh_options_ignores_keys_if_nil
+    command = Rsync.command('.', 'foo', :ssh => { :keys => nil })
+    command = Rsync.command('bar', 'foo')
+    assert_equal 'rsync -az bar foo', command
+  end
 end
