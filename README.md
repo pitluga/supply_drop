@@ -49,7 +49,7 @@ defines where on the server the puppet configuration files are synced to.
 
 allows you to override the puppet command that is run if puppet is not on the path.
 
-    set :puppet_lib, "#{puppet_target}/modules"
+    set :puppet_lib, "#{puppet_destination}/modules"
 
 the value of the PUPPETLIB environment variable, the location of your puppet modules
 
