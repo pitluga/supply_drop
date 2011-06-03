@@ -10,8 +10,9 @@ Capistrano::Configuration.instance.load do
 
     desc "installs puppet"
     task :bootstrap, :except => { :nopuppet => true } do
+      run "mkdir -p #{puppet_destination}"
       run "#{sudo} apt-get update"
-      run "#{sudo} apt-get install -y puppet"
+      run "#{sudo} apt-get install -y puppet rsync"
     end
 
     desc "pushes the current puppet configuration to the server"
