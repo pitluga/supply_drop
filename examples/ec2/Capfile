@@ -1,0 +1,13 @@
+# this is all to get vagrant working with capistrano
+ssh_options[:keys] = File.expand_path('/path/to/ssh/key')
+ssh_options[:paranoid] = false
+ssh_options[:keys_only] = true
+ssh_options[:user_known_hosts_file] = []
+ssh_options[:config] = false
+set :user, 'ubuntu'
+
+
+$:.unshift File.expand_path('../../../lib', __FILE__) # in your Capfile, this would likely be "require 'rubygems'"
+require 'supply_drop'
+
+server 'your ec2 server', :web, :app, :db
