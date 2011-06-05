@@ -29,7 +29,7 @@ This will show you a list of the pending changes to be applied server-by-server.
 
 Applies the pending changes to all the servers.
 
-You can specify that one of your servers should be puppet by setting the :nopuppet flag to true, like so. It will then be skipped by all the above commands.
+You can specify that one of your servers should not be puppeted by setting the :nopuppet flag to true, like so. It will then be skipped by all the above commands.
 
     role :weird_thing, '33.33.33.33', :nopuppet => true
 
