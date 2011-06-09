@@ -9,6 +9,11 @@ class Rsync
       "rsync #{flags.compact.join(' ')} #{from} #{to}"
     end
 
+    def remote_address(user, host, path)
+      user_with_host = [user, host].compact.join('@')
+      [user_with_host, path].join(':')
+    end
+
     def excludes(patterns)
       [patterns].flatten.map { |p| "--exclude=#{p}" }
     end

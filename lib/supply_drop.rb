@@ -20,7 +20,7 @@ Capistrano::Configuration.instance.load do
       find_servers_for_task(current_task).each do |server|
         rsync_cmd = Rsync.command(
           puppet_source,
-          "#{server.user || user}@#{server.host}:#{puppet_destination}/",
+          Rsync.remote_address(server.user || fetch(:user, ENV['USER']), server.host, puppet_destination),
           :delete => true,
           :excludes => ['.git'],
           :ssh => { :keys => ssh_options[:keys] }

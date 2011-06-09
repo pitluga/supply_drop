@@ -28,4 +28,12 @@ class RsyncTest < Test::Unit::TestCase
     command = Rsync.command('bar', 'foo')
     assert_equal 'rsync -az bar foo', command
   end
+
+  def test_remote_address_concatinates_things_correctly
+    assert_equal "user@box.local:/tmp", Rsync.remote_address('user', 'box.local', '/tmp')
+  end
+
+  def test_remote_address_drops_at_when_user_is_nil
+    assert_equal 'box.local:/tmp', Rsync.remote_address(nil, 'box.local', '/tmp')
+  end
 end
