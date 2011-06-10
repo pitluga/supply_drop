@@ -7,6 +7,7 @@ Capistrano::Configuration.instance.load do
     set :puppet_command, 'puppet'
     set :puppet_lib, "#{puppet_destination}/modules"
     set :puppet_parameters, 'puppet.pp'
+    set :puppet_excludes, %w(.git .svn)
 
     desc "installs puppet"
     task :bootstrap, :except => { :nopuppet => true } do
@@ -22,7 +23,7 @@ Capistrano::Configuration.instance.load do
           puppet_source,
           Rsync.remote_address(server.user || fetch(:user, ENV['USER']), server.host, puppet_destination),
           :delete => true,
-          :excludes => ['.git'],
+          :excludes => puppet_excludes,
           :ssh => { :keys => ssh_options[:keys] }
         )
         logger.debug rsync_cmd

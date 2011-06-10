@@ -51,11 +51,15 @@ allows you to override the puppet command that is run if puppet is not on the pa
 
     set :puppet_lib, "#{puppet_destination}/modules"
 
-the value of the PUPPETLIB environment variable, the location of your puppet modules
+the value of the PUPPETLIB environment variable, the location of your puppet modules.
 
     set :puppet_parameters, 'puppet.pp'
 
 the parameters that are passed to the puppet call.
+
+    set :puppet_excludes, %w(.git .svn)
+
+these are patterns that are passed as rsync --exclude flags when pushing your puppet configs to the box.
 
 ### How to contribute
 
