@@ -10,6 +10,7 @@ Capistrano::Configuration.instance.load do
     set :puppet_verbose, false
     set :puppet_excludes, %w(.git .svn)
     set :puppet_avoid_sudo, false
+    set :puppet_stream_output, false
 
     namespace :bootstrap do
       desc "installs puppet via rubygems on an osx host"
@@ -65,14 +66,21 @@ Capistrano::Configuration.instance.load do
     outputs = {}
     begin
       run "#{puppet_cmd} #{flag}" do |channel, stream, data|
-        outputs[channel[:host]] ||= ""
-        outputs[channel[:host]] << data
+        if puppet_stream_output
+          print data
+          $stdout.flush
+        else
+          outputs[channel[:host]] ||= ""
+          outputs[channel[:host]] << data
+        end
       end
       logger.debug "Puppet #{command} complete."
     ensure
-      outputs.each_pair do |host, output|
-        logger.info "Puppet output for #{host}"
-        logger.debug output, "#{host}"
+      unless puppet_stream_output
+        outputs.each_pair do |host, output|
+          logger.info "Puppet output for #{host}"
+          logger.debug output, "#{host}"
+        end
       end
     end
   end
