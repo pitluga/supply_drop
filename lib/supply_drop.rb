@@ -38,7 +38,7 @@ Capistrano::Configuration.instance.load do
           Rsync.remote_address(server.user || fetch(:user, ENV['USER']), server.host, puppet_destination),
           :delete => true,
           :excludes => puppet_excludes,
-          :ssh => { :keys => ssh_options[:keys] }
+          :ssh => { :keys => ssh_options[:keys], :config => ssh_options[:config] }
         )
         logger.debug rsync_cmd
         system rsync_cmd
