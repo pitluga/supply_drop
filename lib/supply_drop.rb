@@ -9,12 +9,24 @@ Capistrano::Configuration.instance.load do
     set :puppet_parameters, lambda { puppet_verbose ? '--debug --trace puppet.pp' : 'puppet.pp' }
     set :puppet_verbose, false
     set :puppet_excludes, %w(.git .svn)
+    set :puppet_avoid_sudo, false
 
-    desc "installs puppet"
-    task :bootstrap, :except => { :nopuppet => true } do
-      run "mkdir -p #{puppet_destination}"
-      run "#{sudo} apt-get update"
-      run "#{sudo} apt-get install -y puppet rsync"
+    namespace :bootstrap do
+      desc "installs puppet via rubygems on an osx host"
+      task :osx do
+        if puppet_avoid_sudo
+          run "gem install puppet --no-ri --no-rdoc"
+        else
+          run "#{sudo} gem install puppet --no-ri --no-rdoc"
+        end
+      end
+
+      desc "installs puppet via apt on an ubuntu host"
+      task :ubuntu do
+        run "mkdir -p #{puppet_destination}"
+        run "#{sudo} apt-get update"
+        run "#{sudo} apt-get install -y puppet rsync"
+      end
     end
 
     desc "pushes the current puppet configuration to the server"
@@ -46,7 +58,8 @@ Capistrano::Configuration.instance.load do
   end
 
   def puppet(command = :noop)
-    puppet_cmd = "cd #{puppet_destination} && #{sudo} PUPPETLIB=#{puppet_lib} #{puppet_command} #{puppet_parameters}"
+    sudo_cmd = puppet_avoid_sudo ? '' : sudo
+    puppet_cmd = "cd #{puppet_destination} && #{sudo_cmd} #{puppet_command} --modulepath=#{puppet_lib} #{puppet_parameters}"
     flag = command == :noop ? '--noop' : ''
 
     outputs = {}
