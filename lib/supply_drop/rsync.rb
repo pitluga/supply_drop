@@ -22,6 +22,8 @@ class Rsync
       mapped_options = options.map do |key, value|
         if key == :keys && value != nil
           [value].flatten.select { |k| File.exist?(k) }.map { |k| "-i #{k}" }
+        elsif key == :config && value != nil
+          "-F #{value}"
         end
       end
 
