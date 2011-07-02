@@ -6,14 +6,27 @@ Capistrano::Configuration.instance.load do
     set :puppet_destination, '/tmp/supply_drop'
     set :puppet_command, 'puppet'
     set :puppet_lib, "#{puppet_destination}/modules"
-    set :puppet_parameters, 'puppet.pp'
+    set :puppet_parameters, lambda { puppet_verbose ? '--debug --trace puppet.pp' : 'puppet.pp' }
+    set :puppet_verbose, false
     set :puppet_excludes, %w(.git .svn)
+    set :puppet_stream_output, false
 
-    desc "installs puppet"
-    task :bootstrap, :except => { :nopuppet => true } do
-      run "mkdir -p #{puppet_destination}"
-      run "#{sudo} apt-get update"
-      run "#{sudo} apt-get install -y puppet rsync"
+    namespace :bootstrap do
+      desc "installs puppet via rubygems on an osx host"
+      task :osx do
+        if fetch(:use_sudo, true)
+          run "#{sudo} gem install puppet --no-ri --no-rdoc"
+        else
+          run "gem install puppet --no-ri --no-rdoc"
+        end
+      end
+
+      desc "installs puppet via apt on an ubuntu host"
+      task :ubuntu do
+        run "mkdir -p #{puppet_destination}"
+        run "#{sudo} apt-get update"
+        run "#{sudo} apt-get install -y puppet rsync"
+      end
     end
 
     desc "pushes the current puppet configuration to the server"
@@ -24,7 +37,7 @@ Capistrano::Configuration.instance.load do
           Rsync.remote_address(server.user || fetch(:user, ENV['USER']), server.host, puppet_destination),
           :delete => true,
           :excludes => puppet_excludes,
-          :ssh => { :keys => ssh_options[:keys] }
+          :ssh => { :keys => ssh_options[:keys], :config => ssh_options[:config] }
         )
         logger.debug rsync_cmd
         system rsync_cmd
@@ -45,20 +58,28 @@ Capistrano::Configuration.instance.load do
   end
 
   def puppet(command = :noop)
-    puppet_cmd = "cd #{puppet_destination} && #{sudo} PUPPETLIB=#{puppet_lib} #{puppet_command} #{puppet_parameters}"
+    sudo_cmd = fetch(:use_sudo, true) ? sudo : ''
+    puppet_cmd = "cd #{puppet_destination} && #{sudo_cmd} #{puppet_command} --modulepath=#{puppet_lib} #{puppet_parameters}"
     flag = command == :noop ? '--noop' : ''
 
     outputs = {}
     begin
       run "#{puppet_cmd} #{flag}" do |channel, stream, data|
-        outputs[channel[:host]] ||= ""
-        outputs[channel[:host]] << data
+        if puppet_stream_output
+          print data
+          $stdout.flush
+        else
+          outputs[channel[:host]] ||= ""
+          outputs[channel[:host]] << data
+        end
       end
       logger.debug "Puppet #{command} complete."
     ensure
-      outputs.each_pair do |host, output|
-        logger.info "Puppet output for #{host}"
-        logger.debug output, "#{host}"
+      unless puppet_stream_output
+        outputs.each_pair do |host, output|
+          logger.info "Puppet output for #{host}"
+          logger.debug output, "#{host}"
+        end
       end
     end
   end
