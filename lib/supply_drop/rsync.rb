@@ -20,14 +20,15 @@ class Rsync
 
     def ssh_options(options)
       mapped_options = options.map do |key, value|
-        if key == :keys && value != nil
-          [value].flatten.select { |k| File.exist?(k) }.map { |k| "-i #{k}" }
-        elsif key == :config && value != nil
-          "-F #{value}"
-        end
-      end
+        next unless value
 
-      %[-e "ssh #{mapped_options.join(' ')}"]
+        case key
+        when :keys then [value].flatten.select { |k| File.exist?(k) }.map { |k| "-i #{k}" }
+        when :config then "-F #{value}"
+        end
+      end.compact
+
+      %[-e "ssh #{mapped_options.join(' ')}"] unless mapped_options.empty?
     end
   end
 end
