@@ -17,7 +17,8 @@ then at the top of your deploy.rb
 
 ### Tasks
 
-    cap puppet:bootstrap
+    cap puppet:bootstrap:ubuntu
+    cap puppet:bootstrap:osx
 
 This does a simple apt-get install of puppet on the target servers.
 
