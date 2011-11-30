@@ -10,6 +10,7 @@ Capistrano::Configuration.instance.load do
     set :puppet_verbose, false
     set :puppet_excludes, %w(.git .svn)
     set :puppet_stream_output, false
+    set :puppet_parallel_rsync, true
 
     namespace :bootstrap do
       desc "installs puppet via rubygems on an osx host"
@@ -31,7 +32,8 @@ Capistrano::Configuration.instance.load do
 
     desc "pushes the current puppet configuration to the server"
     task :update_code, :except => { :nopuppet => true } do
-      find_servers_for_task(current_task).each do |server|
+      servers = SupplyDrop::Util.optionally_async(find_servers_for_task(current_task), puppet_parallel_rsync)
+      servers.each do |server|
         rsync_cmd = Rsync.command(
           puppet_source,
           Rsync.remote_address(server.user || fetch(:user, ENV['USER']), server.host, puppet_destination),
