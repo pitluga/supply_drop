@@ -34,7 +34,7 @@ Capistrano::Configuration.instance.load do
     task :update_code, :except => { :nopuppet => true } do
       servers = SupplyDrop::Util.optionally_async(find_servers_for_task(current_task), puppet_parallel_rsync)
       servers.each do |server|
-        rsync_cmd = Rsync.command(
+        rsync_cmd = SupplyDrop::Rsync.command(
           puppet_source,
           Rsync.remote_address(server.user || fetch(:user, ENV['USER']), server.host, puppet_destination),
           :delete => true,
