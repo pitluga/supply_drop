@@ -72,5 +72,7 @@ If you write anything complicated, write a test for it. Test that your changes w
 
 ### Contributors
 
+* Paul Hinze [phinze](https://github.com/phinze "github")
 * Paul Gross [pgr0ss](https://github.com/pgr0ss "github")
 * Drew Olson [drewolson](https://github.com/drewolson "github")
+* Dave Pirotte [dpirotte](https://github.com/dpirotte "github")
