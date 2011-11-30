@@ -1,4 +1,6 @@
 require 'supply_drop/rsync'
+require 'supply_drop/async_enumerable'
+require 'supply_drop/util'
 
 Capistrano::Configuration.instance.load do
   namespace :puppet do
