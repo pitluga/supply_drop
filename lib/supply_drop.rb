@@ -38,7 +38,7 @@ Capistrano::Configuration.instance.load do
       servers.each do |server|
         rsync_cmd = SupplyDrop::Rsync.command(
           puppet_source,
-          Rsync.remote_address(server.user || fetch(:user, ENV['USER']), server.host, puppet_destination),
+          SupplyDrop::Rsync.remote_address(server.user || fetch(:user, ENV['USER']), server.host, puppet_destination),
           :delete => true,
           :excludes => puppet_excludes,
           :ssh => { :keys => ssh_options[:keys], :config => ssh_options[:config] }
