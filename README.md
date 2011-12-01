@@ -46,7 +46,7 @@ defines the base directory containing your puppet configs that will be rsynced t
 
 defines where on the server the puppet configuration files are synced to.
 
-    set :puppet_command, 'puppet'
+    set :puppet_command, 'puppet apply'
 
 allows you to override the puppet command that is run if puppet is not on the path.
 
@@ -65,6 +65,17 @@ these are patterns that are passed as rsync --exclude flags when pushing your pu
     set :puppet_parallel_rsync, true
 
 determines whether the rsync commands for multiple servers are run in parallel threads or serially
+
+
+### Handling Legacy Puppet
+
+Puppet deprecated the implicit invocation of apply [in the 2.6.x series](https://github.com/puppetlabs/puppet/commit/a23cfd869f90ae4456dded6e5a1c82719b128f01).
+
+The default behavior of supply_drop includes `apply` keyword in its commands, but if you need compatibility with older versions of puppet, set the `puppet_command` variable to omit it.
+
+You'll need to do this if you see errors like this:
+
+    Could not parse for environment production: Could not find file /home/.../supply_drop/apply.pp
 
 ### How to contribute
 
