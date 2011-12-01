@@ -62,11 +62,17 @@ the parameters that are passed to the puppet call.
 
 these are patterns that are passed as rsync --exclude flags when pushing your puppet configs to the box.
 
+    set :puppet_parallel_rsync, true
+
+determines whether the rsync commands for multiple servers are run in parallel threads or serially
+
 ### How to contribute
 
 If you write anything complicated, write a test for it. Test that your changes work using vagrant. Send a pull request. Easy peezy.
 
 ### Contributors
 
+* Paul Hinze [phinze](https://github.com/phinze "github")
 * Paul Gross [pgr0ss](https://github.com/pgr0ss "github")
 * Drew Olson [drewolson](https://github.com/drewolson "github")
+* Dave Pirotte [dpirotte](https://github.com/dpirotte "github")
