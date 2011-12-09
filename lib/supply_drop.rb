@@ -7,7 +7,7 @@ Capistrano::Configuration.instance.load do
     set :puppet_source, '.'
     set :puppet_destination, '/tmp/supply_drop'
     set :puppet_command, 'puppet apply'
-    set :puppet_lib, "#{puppet_destination}/modules"
+    set :puppet_lib, lambda { "#{puppet_destination}/modules" }
     set :puppet_parameters, lambda { puppet_verbose ? '--debug --trace puppet.pp' : 'puppet.pp' }
     set :puppet_verbose, false
     set :puppet_excludes, %w(.git .svn)

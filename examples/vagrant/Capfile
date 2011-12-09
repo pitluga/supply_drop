@@ -11,5 +11,7 @@ set :user, 'vagrant'
 $:.unshift File.expand_path('../../../lib', __FILE__) # in your Capfile, this would likely be "require 'rubygems'"
 require 'supply_drop'
 
+set :puppet_destination, "~/supply_drop"
+
 server '33.33.33.10', :web, :app
 role :db,  '33.33.33.11', :nopuppet => true
