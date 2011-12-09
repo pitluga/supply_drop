@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+
+require 'puppet/application/master'
+Puppet::Application[:master].run

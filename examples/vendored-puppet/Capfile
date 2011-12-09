@@ -1,0 +1,55 @@
+##
+# This file shows an example of how to run puppet on a server that does not have puppet installed.
+# It does assume that you have puppet dependencies installed, ruby, ruby-shadow, etc. See puppet's
+# documentation for the complete list.
+##
+
+
+# this is all to get vagrant working with capistrano
+vagrant_gem = `gem which vagrant`.chomp
+ssh_options[:keys] =  File.expand_path('../../keys/vagrant', vagrant_gem)
+ssh_options[:paranoid] = false
+ssh_options[:keys_only] = true
+ssh_options[:user_known_hosts_file] = []
+ssh_options[:config] = false
+set :user, 'vagrant'
+
+
+$:.unshift File.expand_path('../../../lib', __FILE__) # in your Capfile, this would likely be "require 'rubygems'"
+require 'supply_drop'
+
+# We don't have the gems installed, so we need to tell ruby where to find the code
+# for puppet, and facter
+rubylib = [
+  "$RUBYLIB",
+  "#{puppet_destination}/vendor/puppet-2.7.8/lib",
+  "#{puppet_destination}/vendor/facter-1.6.4/lib",
+].join(':')
+
+# We also need to set up the path for the puppet and facter executables
+path = [
+  "$PATH",
+  "#{puppet_destination}/vendor/puppet-2.7.8/bin",
+  "#{puppet_destination}/vendor/facter-1.6.4/bin",
+  "/opt/ruby/bin" #ruby is in a strage place on the vagrant images, you probably won't have to do this
+].join(':')
+
+set :puppet_command, "env RUBYLIB=#{rubylib} PATH=#{path} puppet apply"
+set :puppet_parameters, [
+  # there is no puppet user or group, so run puppet as yourself
+  "--user #{user}",
+  "--group #{user}",
+  # get puppet to write its runtime information somewhere contained.
+  "--vardir /tmp/puppet_dirs/var",
+  "--confdir /tmp/puppet_dirs/etc",
+  # the manifest to apply
+  "puppet.pp"
+].join(" ")
+
+# puppet will create the vardir and confdir, but not its parent if it doesn't exist.
+after :"puppet:update_code" do
+  run "mkdir -p /tmp/puppet_dirs"
+end
+
+server '33.33.33.10', :web, :app
+role :db,  '33.33.33.11', :nopuppet => true

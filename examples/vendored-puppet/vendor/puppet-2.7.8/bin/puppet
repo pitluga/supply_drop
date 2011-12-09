@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+
+require 'puppet/util/command_line'
+Puppet::Util::CommandLine.new.execute
