@@ -12,6 +12,8 @@ $:.unshift File.expand_path('../../../lib', __FILE__) # in your Capfile, this wo
 require 'supply_drop'
 
 set :puppet_destination, "~/supply_drop"
+set :puppet_command, "puppet"
+set :puppet_stream_output, true
 
 server '33.33.33.10', :web, :app
 role :db,  '33.33.33.11', :nopuppet => true
