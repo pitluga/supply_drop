@@ -35,6 +35,11 @@ class RsyncTest < Test::Unit::TestCase
     assert_equal %Q[rsync -az -e "ssh -F #{__FILE__}" . foo], command
   end
 
+  def test_ssh_options_port_adds_port
+    command = SupplyDrop::Rsync.command('.', 'foo', :ssh => { :port => '30022' })
+    assert_equal %Q[rsync -az -e "ssh -p 30022" . foo], command
+  end
+
   def test_ssh_options_ignores_config_if_nil_or_false
     command = SupplyDrop::Rsync.command('.', 'foo', :ssh => { :config => nil })
     assert_equal 'rsync -az . foo', command

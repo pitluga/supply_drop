@@ -26,6 +26,7 @@ module SupplyDrop
           case key
           when :keys then [value].flatten.select { |k| File.exist?(k) }.map { |k| "-i #{k}" }
           when :config then "-F #{value}"
+          when :port then "-p #{value}"
           end
         end.compact
 
