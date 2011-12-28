@@ -35,7 +35,7 @@ Capistrano::Configuration.instance.load do
     desc "pushes the current puppet configuration to the server"
     task :update_code, :except => { :nopuppet => true } do
       servers = SupplyDrop::Util.optionally_async(find_servers_for_task(current_task), puppet_parallel_rsync)
-      servers.each do |server|
+      failed_servers = servers.map do |server|
         rsync_cmd = SupplyDrop::Rsync.command(
           puppet_source,
           SupplyDrop::Rsync.remote_address(server.user || fetch(:user, ENV['USER']), server.host, puppet_destination),
@@ -44,8 +44,10 @@ Capistrano::Configuration.instance.load do
           :ssh => { :keys => ssh_options[:keys], :config => ssh_options[:config], :port => fetch(:port, nil) }
         )
         logger.debug rsync_cmd
-        system rsync_cmd
-      end
+        server.host unless system rsync_cmd
+      end.compact
+
+      raise "rsync failed on #{failed_servers.join(',')}" if failed_servers.any?
     end
 
     desc "runs puppet with --noop flag to show changes"
