@@ -87,3 +87,4 @@ If you write anything complicated, write a test for it. Test that your changes w
 * Paul Gross [pgr0ss](https://github.com/pgr0ss "github")
 * Drew Olson [drewolson](https://github.com/drewolson "github")
 * Dave Pirotte [dpirotte](https://github.com/dpirotte "github")
+* Dan Manges [dan-manges](https://github.com/dan-manges "github") (one soda's worth)
