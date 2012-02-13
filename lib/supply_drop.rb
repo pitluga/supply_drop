@@ -30,6 +30,12 @@ Capistrano::Configuration.instance.load do
         run "#{sudo} apt-get update"
         run "#{sudo} apt-get install -y puppet rsync"
       end
+
+      desc "installs puppet via yum on a centos/red hat host"
+      task :redhat do
+        run "mkdir -p #{puppet_destination}"
+        run "#{sudo} yum -y install puppet rsync"
+      end
     end
 
     desc "pushes the current puppet configuration to the server"
