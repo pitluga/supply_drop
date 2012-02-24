@@ -88,9 +88,9 @@ Capistrano::Configuration.instance.load do
       logger.debug "Puppet #{command} complete."
     ensure
       unless puppet_stream_output
-        outputs.each_pair do |host, output|
+        outputs.keys.sort.each do |host|
           logger.info "Puppet output for #{host}"
-          logger.debug output, "#{host}"
+          logger.debug outputs[host], "#{host}"
         end
       end
     end
