@@ -19,6 +19,7 @@ then at the top of your deploy.rb
 
     cap puppet:bootstrap:ubuntu
     cap puppet:bootstrap:osx
+    cap puppet:bootstrap:redhat
 
 This does a simple apt-get install of puppet on the target servers.
 
