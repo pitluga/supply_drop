@@ -76,6 +76,10 @@ determines whether the rsync commands for multiple servers are run in parallel t
 
 when true, will syntax check your puppet files and erb templates before rsyncing them to your servers.
 
+    set :puppet_write_to_file, nil
+
+a file to additionally write puppet output to, useful for large noops with small scrollbacks.
+
 ### Handling Legacy Puppet
 
 Puppet deprecated the implicit invocation of apply [in the 2.6.x series](https://github.com/puppetlabs/puppet/commit/a23cfd869f90ae4456dded6e5a1c82719b128f01).
