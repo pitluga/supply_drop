@@ -14,6 +14,7 @@ require 'supply_drop'
 set :puppet_destination, "~/supply_drop"
 set :puppet_command, "puppet"
 set :puppet_stream_output, true
+set :puppet_syntax_check, false
 
 server '33.33.33.10', :web, :app
 role :db,  '33.33.33.11', :nopuppet => true

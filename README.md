@@ -31,6 +31,11 @@ This will show you a list of the pending changes to be applied server-by-server.
 
 Applies the pending changes to all the servers.
 
+    cap puppet:syntax_check
+
+Locally syntax checks all the puppet files and erb templates. Requires you to have puppet installed locally.
+
+
 You can specify that one of your servers should not be puppeted by setting the :nopuppet flag to true, like so. It will then be skipped by all the above commands.
 
     role :weird_thing, '33.33.33.33', :nopuppet => true
@@ -67,6 +72,9 @@ these are patterns that are passed as rsync --exclude flags when pushing your pu
 
 determines whether the rsync commands for multiple servers are run in parallel threads or serially
 
+    set :puppet_syntax_check, true
+
+when true, will syntax check your puppet files and erb templates before rsyncing them to your servers.
 
 ### Handling Legacy Puppet
 

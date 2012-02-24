@@ -1,5 +1,6 @@
 require 'supply_drop/rsync'
 require 'supply_drop/async_enumerable'
+require 'supply_drop/syntax_checker'
 require 'supply_drop/util'
 
 Capistrano::Configuration.instance.load do
@@ -13,6 +14,7 @@ Capistrano::Configuration.instance.load do
     set :puppet_excludes, %w(.git .svn)
     set :puppet_stream_output, false
     set :puppet_parallel_rsync, true
+    set :puppet_syntax_check, true
 
     namespace :bootstrap do
       desc "installs puppet via rubygems on an osx host"
@@ -38,6 +40,24 @@ Capistrano::Configuration.instance.load do
       end
     end
 
+    desc "checks the syntax of all *.pp and *.erb files"
+    task :syntax_check do
+      checker = SupplyDrop::SyntaxChecker.new(puppet_source)
+      logger.info "Sytax Checking..."
+      errors = false
+      checker.validate_puppet_files.each do |file, error|
+        logger.important "Puppet error: #{file}"
+        logger.important error
+        errors = true
+      end
+      checker.validate_templates.each do |file, error|
+        logger.important "Template error: #{file}"
+        logger.important error
+        errors = true
+      end
+      raise "syntax errors" if errors
+    end
+
     desc "pushes the current puppet configuration to the server"
     task :update_code, :except => { :nopuppet => true } do
       servers = SupplyDrop::Util.optionally_async(find_servers_for_task(current_task), puppet_parallel_rsync)
@@ -54,6 +74,10 @@ Capistrano::Configuration.instance.load do
       end.compact
 
       raise "rsync failed on #{failed_servers.join(',')}" if failed_servers.any?
+    end
+
+    before :'puppet:update_code' do
+      syntax_check if puppet_syntax_check
     end
 
     desc "runs puppet with --noop flag to show changes"
