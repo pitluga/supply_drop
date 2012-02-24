@@ -2,6 +2,9 @@ require 'supply_drop/rsync'
 require 'supply_drop/async_enumerable'
 require 'supply_drop/syntax_checker'
 require 'supply_drop/util'
+require 'supply_drop/writer/batched'
+require 'supply_drop/writer/file'
+require 'supply_drop/writer/streaming'
 
 Capistrano::Configuration.instance.load do
   namespace :puppet do
@@ -15,6 +18,7 @@ Capistrano::Configuration.instance.load do
     set :puppet_stream_output, false
     set :puppet_parallel_rsync, true
     set :puppet_syntax_check, true
+    set :puppet_write_to_file, nil
 
     namespace :bootstrap do
       desc "installs puppet via rubygems on an osx host"
@@ -98,25 +102,21 @@ Capistrano::Configuration.instance.load do
     puppet_cmd = "cd #{puppet_destination} && #{sudo_cmd} #{puppet_command} --modulepath=#{puppet_lib} #{puppet_parameters}"
     flag = command == :noop ? '--noop' : ''
 
-    outputs = {}
+    writer = if puppet_stream_output
+               SupplyDrop::Writer::Streaming.new(logger)
+             else
+               SupplyDrop::Writer::Batched.new(logger)
+             end
+
+    writer = SupplyDrop::Writer::File.new(writer, puppet_write_to_file) unless puppet_write_to_file.nil?
+
     begin
       run "#{puppet_cmd} #{flag}" do |channel, stream, data|
-        if puppet_stream_output
-          print data
-          $stdout.flush
-        else
-          outputs[channel[:host]] ||= ""
-          outputs[channel[:host]] << data
-        end
+        writer.collect_output(channel[:host], data)
       end
       logger.debug "Puppet #{command} complete."
     ensure
-      unless puppet_stream_output
-        outputs.keys.sort.each do |host|
-          logger.info "Puppet output for #{host}"
-          logger.debug outputs[host], "#{host}"
-        end
-      end
+      writer.all_output_collected
     end
   end
 end
