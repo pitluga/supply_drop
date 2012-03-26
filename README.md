@@ -72,9 +72,10 @@ these are patterns that are passed as rsync --exclude flags when pushing your pu
 
 determines whether the rsync commands for multiple servers are run in parallel threads or serially
 
-    set :puppet_syntax_check, true
+    set :puppet_syntax_check, false
 
-when true, will syntax check your puppet files and erb templates before rsyncing them to your servers.
+when true, will syntax check your puppet files and erb templates before rsyncing them to your servers. This is an
+experimental feature and is quite slow at the moment.
 
     set :puppet_write_to_file, nil
 

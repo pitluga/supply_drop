@@ -17,7 +17,7 @@ Capistrano::Configuration.instance.load do
     set :puppet_excludes, %w(.git .svn)
     set :puppet_stream_output, false
     set :puppet_parallel_rsync, true
-    set :puppet_syntax_check, true
+    set :puppet_syntax_check, false
     set :puppet_write_to_file, nil
 
     namespace :bootstrap do
