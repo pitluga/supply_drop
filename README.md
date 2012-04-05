@@ -77,6 +77,10 @@ determines whether the rsync commands for multiple servers are run in parallel t
 when true, will syntax check your puppet files and erb templates before rsyncing them to your servers. This is an
 experimental feature and is quite slow at the moment.
 
+    set :puppet_stream_output, false
+    
+will write the incremental output from the hosts to the screen instead of waiting until complete and printing by host.
+
     set :puppet_write_to_file, nil
 
 a file to additionally write puppet output to, useful for large noops with small scrollbacks.
