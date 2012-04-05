@@ -87,17 +87,17 @@ Capistrano::Configuration.instance.load do
     desc "runs puppet with --noop flag to show changes"
     task :noop, :except => { :nopuppet => true } do
       update_code
-      puppet :noop
+      _puppet :noop
     end
 
     desc "applies the current puppet config to the server"
     task :apply, :except => { :nopuppet => true } do
       update_code
-      puppet :apply
+      _puppet :apply
     end
   end
 
-  def puppet(command = :noop)
+  def _puppet(command = :noop)
     sudo_cmd = fetch(:use_sudo, true) ? sudo : ''
     puppet_cmd = "cd #{puppet_destination} && #{sudo_cmd} #{puppet_command} --modulepath=#{puppet_lib} #{puppet_parameters}"
     flag = command == :noop ? '--noop' : ''
