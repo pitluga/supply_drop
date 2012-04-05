@@ -81,6 +81,10 @@ experimental feature and is quite slow at the moment.
 
 a file to additionally write puppet output to, useful for large noops with small scrollbacks.
 
+    set :puppet_runner, nil
+
+allows you to specify the user to execute the puppet command as. Like running sudo -u puppet args from the command line.
+
 ### Handling Legacy Puppet
 
 Puppet deprecated the implicit invocation of apply [in the 2.6.x series](https://github.com/puppetlabs/puppet/commit/a23cfd869f90ae4456dded6e5a1c82719b128f01).

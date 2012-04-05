@@ -19,6 +19,7 @@ Capistrano::Configuration.instance.load do
     set :puppet_parallel_rsync, true
     set :puppet_syntax_check, false
     set :puppet_write_to_file, nil
+    set :puppet_runner, nil
 
     namespace :bootstrap do
       desc "installs puppet via rubygems on an osx host"
@@ -98,8 +99,7 @@ Capistrano::Configuration.instance.load do
   end
 
   def _puppet(command = :noop)
-    sudo_cmd = fetch(:use_sudo, true) ? sudo : ''
-    puppet_cmd = "cd #{puppet_destination} && #{sudo_cmd} #{puppet_command} --modulepath=#{puppet_lib} #{puppet_parameters}"
+    puppet_cmd = "cd #{puppet_destination} && #{_sudo_cmd} #{puppet_command} --modulepath=#{puppet_lib} #{puppet_parameters}"
     flag = command == :noop ? '--noop' : ''
 
     writer = if puppet_stream_output
@@ -117,6 +117,15 @@ Capistrano::Configuration.instance.load do
       logger.debug "Puppet #{command} complete."
     ensure
       writer.all_output_collected
+    end
+  end
+
+  def _sudo_cmd
+    if fetch(:use_sudo, true)
+      sudo(:as => puppet_runner)
+    else
+      logger.info "NOTICE: puppet_runner configuration invalid when use_sudo is false, ignoring..." unless puppet_runner.nil?
+      ''
     end
   end
 end
