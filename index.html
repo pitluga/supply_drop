@@ -1,0 +1,184 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Supply drop by pitluga</title>
+    
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Supply drop</h1>
+        <p>masterless puppet using capistrano</p>
+        <p class="view"><a href="https://github.com/pitluga/supply_drop">View the Project on GitHub <small>pitluga/supply_drop</small></a></p>
+        <ul>
+          <li><a href="https://github.com/pitluga/supply_drop/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/pitluga/supply_drop/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/pitluga/supply_drop">Fork On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>supply_drop</h1>
+
+<p>supply_drop is a capistrano plugin to facitiate provisioning servers with puppet, without using the puppet server. It works by simply rsyncing your puppet configuration files to your servers and running puppet apply. It strives to allow you to write idiomatic puppet scripts while being as lightweight as possible.</p>
+
+<h3>Installation</h3>
+
+<pre><code>gem install supply_drop
+</code></pre>
+
+<p>or with Bundler</p>
+
+<pre><code>gem 'supply_drop'
+</code></pre>
+
+<p>then at the top of your deploy.rb</p>
+
+<pre><code>require 'rubygems'
+require 'supply_drop'
+</code></pre>
+
+<h3>Tasks</h3>
+
+<pre><code>cap puppet:bootstrap:ubuntu
+cap puppet:bootstrap:osx
+cap puppet:bootstrap:redhat
+</code></pre>
+
+<p>This does a simple apt-get install of puppet on the target servers.</p>
+
+<pre><code>cap puppet:noop
+</code></pre>
+
+<p>This will show you a list of the pending changes to be applied server-by-server.</p>
+
+<pre><code>cap puppet:apply
+</code></pre>
+
+<p>Applies the pending changes to all the servers.</p>
+
+<pre><code>cap puppet:syntax_check
+</code></pre>
+
+<p>Locally syntax checks all the puppet files and erb templates. Requires you to have puppet installed locally.</p>
+
+<p>You can specify that one of your servers should not be puppeted by setting the :nopuppet flag to true, like so. It will then be skipped by all the above commands.</p>
+
+<pre><code>role :weird_thing, '33.33.33.33', :nopuppet =&gt; true
+</code></pre>
+
+<h3>Variables</h3>
+
+<p>There are several variables that can be overriden to change how supply_drop works:</p>
+
+<pre><code>set :puppet_source, '.'
+</code></pre>
+
+<p>defines the base directory containing your puppet configs that will be rsynced to the servers.</p>
+
+<pre><code>set :puppet_destination, '/tmp/supply_drop'
+</code></pre>
+
+<p>defines where on the server the puppet configuration files are synced to.</p>
+
+<pre><code>set :puppet_command, 'puppet apply'
+</code></pre>
+
+<p>allows you to override the puppet command that is run if puppet is not on the path.</p>
+
+<pre><code>set :puppet_lib, "#{puppet_destination}/modules"
+</code></pre>
+
+<p>the value of the PUPPETLIB environment variable, the location of your puppet modules.</p>
+
+<pre><code>set :puppet_parameters, 'puppet.pp'
+</code></pre>
+
+<p>the parameters that are passed to the puppet call.</p>
+
+<pre><code>set :puppet_excludes, %w(.git .svn)
+</code></pre>
+
+<p>these are patterns that are passed as rsync --exclude flags when pushing your puppet configs to the box.</p>
+
+<pre><code>set :puppet_parallel_rsync, true
+</code></pre>
+
+<p>determines whether the rsync commands for multiple servers are run in parallel threads or serially</p>
+
+<pre><code>set :puppet_syntax_check, false
+</code></pre>
+
+<p>when true, will syntax check your puppet files and erb templates before rsyncing them to your servers. This is an
+experimental feature and is quite slow at the moment.</p>
+
+<pre><code>set :puppet_stream_output, false
+</code></pre>
+
+<p>will write the incremental output from the hosts to the screen instead of waiting until complete and printing by host.</p>
+
+<pre><code>set :puppet_write_to_file, nil
+</code></pre>
+
+<p>a file to additionally write puppet output to, useful for large noops with small scrollbacks.</p>
+
+<pre><code>set :puppet_runner, nil
+</code></pre>
+
+<p>allows you to specify the user to execute the puppet command as. Like running sudo -u puppet args from the command line.</p>
+
+<h3>Handling Legacy Puppet</h3>
+
+<p>Puppet deprecated the implicit invocation of apply <a href="https://github.com/puppetlabs/puppet/commit/a23cfd869f90ae4456dded6e5a1c82719b128f01">in the 2.6.x series</a>.</p>
+
+<p>The default behavior of supply_drop includes <code>apply</code> keyword in its commands, but if you need compatibility with older versions of puppet, set the <code>puppet_command</code> variable to omit it.</p>
+
+<p>You'll need to do this if you see errors like this:</p>
+
+<pre><code>Could not parse for environment production: Could not find file /home/.../supply_drop/apply.pp
+</code></pre>
+
+<h3>How to contribute</h3>
+
+<p>If you write anything complicated, write a test for it. Test that your changes work using vagrant. Send a pull request. Easy peezy.</p>
+
+<h3>Contributors</h3>
+
+<ul>
+<li>Paul Hinze <a href="https://github.com/phinze" title="github">phinze</a>
+</li>
+<li>Paul Gross <a href="https://github.com/pgr0ss" title="github">pgr0ss</a>
+</li>
+<li>Drew Olson <a href="https://github.com/drewolson" title="github">drewolson</a>
+</li>
+<li>Dave Pirotte <a href="https://github.com/dpirotte" title="github">dpirotte</a>
+</li>
+<li>Dan Manges <a href="https://github.com/dan-manges" title="github">dan-manges</a> (one soda's worth)</li>
+</ul>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/pitluga">pitluga</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-30834037-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
