@@ -20,6 +20,7 @@ Capistrano::Configuration.instance.load do
     set :puppet_syntax_check, false
     set :puppet_write_to_file, nil
     set :puppet_runner, nil
+    set :puppet_lock_file, '/tmp/puppet.lock'
 
     namespace :bootstrap do
       desc "installs puppet via rubygems on an osx host"
@@ -72,6 +73,7 @@ Capistrano::Configuration.instance.load do
           SupplyDrop::Rsync.remote_address(server.user || fetch(:user, ENV['USER']), server.host, puppet_destination),
           :delete => true,
           :excludes => puppet_excludes,
+          :world_writable => true,
           :ssh => { :keys => ssh_options[:keys], :config => ssh_options[:config], :port => fetch(:port, nil) }
         )
         logger.debug rsync_cmd
@@ -85,17 +87,71 @@ Capistrano::Configuration.instance.load do
       syntax_check if puppet_syntax_check
     end
 
+    before 'puppet:noop' do
+      _lock if _should_lock?
+    end
+
+    before 'puppet:apply' do
+      _lock if _should_lock?
+    end
+
     desc "runs puppet with --noop flag to show changes"
     task :noop, :except => { :nopuppet => true } do
-      update_code
-      _puppet :noop
+      transaction do
+        on_rollback { _unlock }
+        update_code
+        _puppet :noop
+      end
     end
 
     desc "applies the current puppet config to the server"
     task :apply, :except => { :nopuppet => true } do
-      update_code
-      _puppet :apply
+      transaction do
+        on_rollback { _unlock }
+        update_code
+        _puppet :apply
+      end
     end
+
+    desc "clears the puppet lockfile on the server."
+    task :remove_lock, :except => { :nopuppet => true} do
+      _unlock
+    end
+
+    after 'puppet:noop' do
+      _unlock
+    end
+
+    after 'puppet:apply' do
+      _unlock
+    end
+  end
+
+  def _red_text(text)
+    "\033[0;31m#{text}\033[0m"
+  end
+
+  def _lock
+    if puppet_lock_file
+      run <<-GETLOCK
+if [ ! -f #{puppet_lock_file} ]; then
+    touch #{puppet_lock_file}
+    mkdir -p #{remote_puppet_destination}
+    chmod o+w #{remote_puppet_destination}
+else
+    stat -c "#{_red_text("Puppet in progress, #{puppet_lock_file} owned by %U since %x")}" #{puppet_lock_file} >&2
+    exit 1
+fi"
+      GETLOCK
+    end
+  end
+
+  def _unlock
+    run "rm -f #{puppet_lock_file}; true" if _should_lock?
+  end
+
+  def _should_lock?
+    puppet_lock_file && !ENV['NO_PUPPET_LOCK']
   end
 
   def _puppet(command = :noop)

@@ -35,6 +35,10 @@ Applies the pending changes to all the servers.
 
 Locally syntax checks all the puppet files and erb templates. Requires you to have puppet installed locally.
 
+    cap puppet:remove_lock
+
+Remove any stale lock files created by supply_drop when locking is used and something went wrong.
+
 
 You can specify that one of your servers should not be puppeted by setting the :nopuppet flag to true, like so. It will then be skipped by all the above commands.
 
@@ -78,7 +82,7 @@ when true, will syntax check your puppet files and erb templates before rsyncing
 experimental feature and is quite slow at the moment.
 
     set :puppet_stream_output, false
-    
+
 will write the incremental output from the hosts to the screen instead of waiting until complete and printing by host.
 
     set :puppet_write_to_file, nil
@@ -88,6 +92,10 @@ a file to additionally write puppet output to, useful for large noops with small
     set :puppet_runner, nil
 
 allows you to specify the user to execute the puppet command as. Like running sudo -u puppet args from the command line.
+
+    set :puppet_lock_file, '/tmp/puppet.lock'
+
+sets a lockfile on each remote host to prevent multiple users from puppeting the same node simultaneously. Set to nil to disable locking. You can alternately temporarily disable locking by setting the NO_PUPPET_LOCKING environment variable to any value.
 
 ### Handling Legacy Puppet
 
