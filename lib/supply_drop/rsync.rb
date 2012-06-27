@@ -3,7 +3,6 @@ module SupplyDrop
     class << self
       def command(from, to, options={})
         flags = ['-az']
-        flags << '--chmod=o+w' if options[:world_writable]
         flags << '--delete' if options[:delete]
         flags << excludes(options[:excludes]) if options.has_key?(:excludes)
         flags << ssh_options(options[:ssh]) if options.has_key?(:ssh)
