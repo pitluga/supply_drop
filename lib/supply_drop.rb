@@ -73,7 +73,6 @@ Capistrano::Configuration.instance.load do
           SupplyDrop::Rsync.remote_address(server.user || fetch(:user, ENV['USER']), server.host, puppet_destination),
           :delete => true,
           :excludes => puppet_excludes,
-          :world_writable => true,
           :ssh => { :keys => ssh_options[:keys], :config => ssh_options[:config], :port => fetch(:port, nil) }
         )
         logger.debug rsync_cmd
@@ -137,7 +136,7 @@ Capistrano::Configuration.instance.load do
 if [ ! -f #{puppet_lock_file} ]; then
     touch #{puppet_lock_file};
     mkdir -p #{remote_puppet_destination};
-    chmod o+w #{remote_puppet_destination};
+    #{sudo} chown -R $USER: #{remote_puppet_destination};
 else
     stat -c "#{_red_text("Puppet in progress, #{puppet_lock_file} owned by %U since %x")}" #{puppet_lock_file} >&2;
     exit 1;
