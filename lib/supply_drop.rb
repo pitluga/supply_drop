@@ -136,8 +136,8 @@ Capistrano::Configuration.instance.load do
       run <<-GETLOCK
 if [ ! -f #{puppet_lock_file} ]; then
     touch #{puppet_lock_file};
-    mkdir -p #{remote_puppet_destination};
-    chmod o+w #{remote_puppet_destination};
+    mkdir -p #{puppet_destination};
+    chmod o+w #{puppet_destination};
 else
     stat -c "#{_red_text("Puppet in progress, #{puppet_lock_file} owned by %U since %x")}" #{puppet_lock_file} >&2;
     exit 1;
