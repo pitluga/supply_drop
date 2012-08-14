@@ -1,17 +1,19 @@
 module SupplyDrop
   module AsyncEnumerable
     def each(&block)
-      threads = []
+      pool = SupplyDrop::ThreadPool.new(SupplyDrop::Util.thread_pool_size)
       super do |item|
-        threads << Thread.new { block.call(item) }
+        pool.schedule(item, &block)
       end
-      threads.each(&:join)
+      pool.shutdown
     end
 
     def map(&block)
+      pool = SupplyDrop::ThreadPool.new(SupplyDrop::Util.thread_pool_size)
       super do |item|
-        Thread.new { Thread.current[:output] = block.call(item) }
-      end.map(&:join).map { |t| t[:output] }
+        pool.schedule(item, &block)
+      end
+      pool.shutdown
     end
   end
 end

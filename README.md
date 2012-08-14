@@ -76,6 +76,10 @@ these are patterns that are passed as rsync --exclude flags when pushing your pu
 
 determines whether the rsync commands for multiple servers are run in parallel threads or serially
 
+    set :puppet_parallel_rsync_pool_size,5
+
+sets the maximum number of rsync commands that are run concurrently
+
     set :puppet_syntax_check, false
 
 when true, will syntax check your puppet files and erb templates before rsyncing them to your servers. This is an
