@@ -1,6 +1,7 @@
 require 'supply_drop/rsync'
 require 'supply_drop/async_enumerable'
 require 'supply_drop/syntax_checker'
+require 'supply_drop/thread_pool'
 require 'supply_drop/util'
 require 'supply_drop/writer/batched'
 require 'supply_drop/writer/file'
@@ -17,6 +18,7 @@ Capistrano::Configuration.instance.load do
     set :puppet_excludes, %w(.git .svn)
     set :puppet_stream_output, false
     set :puppet_parallel_rsync, true
+    set :puppet_parallel_rsync_pool_size, 10
     set :puppet_syntax_check, false
     set :puppet_write_to_file, nil
     set :puppet_runner, nil
@@ -85,6 +87,7 @@ Capistrano::Configuration.instance.load do
 
     before :'puppet:update_code' do
       syntax_check if puppet_syntax_check
+      _set_threadpool_size
     end
 
     before 'puppet:noop' do
@@ -125,6 +128,10 @@ Capistrano::Configuration.instance.load do
     after 'puppet:apply' do
       _unlock
     end
+  end
+
+  def _set_threadpool_size
+    SupplyDrop::Util.thread_pool_size = puppet_parallel_rsync_pool_size
   end
 
   def _red_text(text)
