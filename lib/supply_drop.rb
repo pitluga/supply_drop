@@ -75,7 +75,6 @@ Capistrano::Configuration.instance.load do
           SupplyDrop::Rsync.remote_address(server.user || fetch(:user, ENV['USER']), server.host, puppet_destination),
           :delete => true,
           :excludes => puppet_excludes,
-          :world_writable => true,
           :ssh => { :keys => ssh_options[:keys], :config => ssh_options[:config], :port => fetch(:port, nil) }
         )
         logger.debug rsync_cmd
@@ -86,16 +85,18 @@ Capistrano::Configuration.instance.load do
     end
 
     before :'puppet:update_code' do
-      syntax_check if puppet_syntax_check
       _set_threadpool_size
+      syntax_check if puppet_syntax_check
     end
 
     before 'puppet:noop' do
-      _lock if _should_lock?
+      _prep_destination
+      _lock
     end
 
     before 'puppet:apply' do
-      _lock if _should_lock?
+      _prep_destination
+      _lock
     end
 
     desc "runs puppet with --noop flag to show changes"
@@ -138,13 +139,16 @@ Capistrano::Configuration.instance.load do
     "\033[0;31m#{text}\033[0m"
   end
 
+  def _prep_destination
+    run "mkdir -p #{puppet_destination}"
+    run "#{sudo} chown -R $USER: #{puppet_destination}"
+  end
+
   def _lock
-    if puppet_lock_file
+    if _should_lock?
       run <<-GETLOCK
 if [ ! -f #{puppet_lock_file} ]; then
     touch #{puppet_lock_file};
-    mkdir -p #{puppet_destination};
-    chmod o+w #{puppet_destination};
 else
     stat -c "#{_red_text("Puppet in progress, #{puppet_lock_file} owned by %U since %x")}" #{puppet_lock_file} >&2;
     exit 1;

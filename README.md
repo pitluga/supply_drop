@@ -76,7 +76,7 @@ these are patterns that are passed as rsync --exclude flags when pushing your pu
 
 determines whether the rsync commands for multiple servers are run in parallel threads or serially
 
-    set :puppet_parallel_rsync_pool_size,5
+    set :puppet_parallel_rsync_pool_size, 10
 
 sets the maximum number of rsync commands that are run concurrently
 
