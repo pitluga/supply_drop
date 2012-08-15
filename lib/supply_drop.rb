@@ -158,7 +158,7 @@ fi
   end
 
   def _unlock
-    run "rm -f #{puppet_lock_file}; true" if _should_lock?
+    run "#{sudo} rm -f #{puppet_lock_file}; true" if _should_lock?
   end
 
   def _should_lock?
