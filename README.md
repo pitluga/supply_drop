@@ -2,6 +2,8 @@
 
 supply_drop is a capistrano plugin to facitiate provisioning servers with puppet, without using the puppet server. It works by simply rsyncing your puppet configuration files to your servers and running puppet apply. It strives to allow you to write idiomatic puppet scripts while being as lightweight as possible.
 
+[![Build Status](https://secure.travis-ci.org/pitluga/supply_drop.png)](http://travis-ci.org/pitluga/supply_drop)
+
 ### Installation
 
     gem install supply_drop
