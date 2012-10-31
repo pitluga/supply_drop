@@ -5,26 +5,7 @@ if RUBY_VERSION >= '1.9'
   SimpleOrderedHash = ::Hash
 else
   class SimpleOrderedHash < Hash
-    def initialize(*args, &block)
-      super
-      @keys = []
-    end
-    def self.[](*args)
-      ordered_hash = new
-      args.each_with_index {|key, ind|
-        next if ind % 2 != 0
-        value = args[ind + 1]
-        ordered_hash[key] = value
-      }
-      ordered_hash
-    end
-    def []=(key, value)
-      @keys << key if !has_key?(key)
-      super
-    end
-    def each
-      @keys.each {|key| yield [key, self[key]]}
-    end
+    def each; self.keys.map(&:to_s).sort.each {|key| yield [key.to_sym, self[key.to_sym]]}; end
   end
 end
 
