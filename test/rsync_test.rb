@@ -78,8 +78,14 @@ class RsyncTest < Test::Unit::TestCase
       :user, 'root',
       :user_known_hosts_file, '~/.ssh/known_hosts'
     ])
-    expecting = %q[-e "ssh -o BindAddress='0.0.0.0' -o Compression='yes' -o CompressionLevel='1' -F '/etc/ssh/ssh_config' -o GlobalKnownHostsFile='/etc/ssh/known_hosts' -o HostName='myhost' -o StrictHostKeyChecking='yes' -p 2222 -o ConnectTimeout='10000' -l root -o UserKnownHostsFile='~/.ssh/known_hosts'"]
-    assert_equal expecting, options
+    assert_match /-o BindAddress='0.0.0.0'/, options
+    assert_match /-o Compression='yes'/, options
+    assert_match %r{-o CompressionLevel='1' -F '/etc/ssh/ssh_config'}, options
+    assert_match %r{-o GlobalKnownHostsFile='/etc/ssh/known_hosts'}, options
+    assert_match /-o HostName='myhost'/, options
+    assert_match /-o StrictHostKeyChecking='yes' -p 2222/, options
+    assert_match /-o ConnectTimeout='10000' -l root/, options
+    assert_match %r{-o UserKnownHostsFile='~/.ssh/known_hosts'}, options
   end
 
   def test_complex_ssh_options
@@ -92,8 +98,19 @@ class RsyncTest < Test::Unit::TestCase
       :verbose, :debug,
       :user_known_hosts_file, ['~/.ssh/known_hosts', '~/.ssh/production_known_hosts']
     ])
-    expecting = %q[-e "ssh -o PasswordAuthentication='no' -o PubkeyAuthentication='yes' -o HostbasedAuthentication='no' -o Ciphers='aes256-cbc,aes192-cbc' -o MACs='hmac-sha2-256' -o HostKeyAlgorithms='ecdsa-sha2-nistp256-cert-v01@openssh.com' -o RekeyLimit='2M' -o UserKnownHostsFile='~/.ssh/known_hosts' -o UserKnownHostsFile='~/.ssh/production_known_hosts' -o LogLevel='DEBUG'"]
-    assert_equal expecting, options
+    assert_match /PasswordAuthentication='no'/, options
+    assert_match /PubkeyAuthentication='yes'/, options
+    assert_match /HostbasedAuthentication='no'/, options
+    assert_match /-o PasswordAuthentication='no'/, options
+    assert_match /-o PubkeyAuthentication='yes'/, options
+    assert_match /-o HostbasedAuthentication='no'/, options
+    assert_match /-o Ciphers='aes256-cbc,aes192-cbc'/, options
+    assert_match /-o MACs='hmac-sha2-256'/, options
+    assert_match /-o HostKeyAlgorithms='ecdsa-sha2-nistp256-cert-v01@openssh.com'/, options
+    assert_match /-o RekeyLimit='2M'/, options
+    assert_match %r{-o UserKnownHostsFile='~/.ssh/known_hosts'}, options
+    assert_match %r{-o UserKnownHostsFile='~/.ssh/production_known_hosts'}, options
+    assert_match /-o LogLevel='DEBUG'/, options
   end
 
 end
