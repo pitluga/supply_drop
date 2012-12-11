@@ -89,7 +89,13 @@ Capistrano::Configuration.instance.load do
 
     desc "clears the puppet lockfile on the server."
     task :remove_lock, :except => { :nopuppet => true} do
-      supply_drop.lock
+      logger.important "WARNING: puppet:remove_lock is depricated, please use puppet:unlock instead"
+      supply_drop.unlock
+    end
+
+    desc "clears the puppet lockfile on the server."
+    task :unlock, :except => { :nopuppet => true} do
+      supply_drop.unlock
     end
   end
 end
