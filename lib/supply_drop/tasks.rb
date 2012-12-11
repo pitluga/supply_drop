@@ -65,10 +65,10 @@ Capistrano::Configuration.instance.load do
 
     desc "runs puppet with --noop flag to show changes"
     task :noop, :except => { :nopuppet => true } do
+      supply_drop.lock
       transaction do
         on_rollback { supply_drop.unlock }
         supply_drop.prepare
-        supply_drop.lock
         update_code
         supply_drop.noop
         supply_drop.unlock
@@ -77,10 +77,10 @@ Capistrano::Configuration.instance.load do
 
     desc "applies the current puppet config to the server"
     task :apply, :except => { :nopuppet => true } do
+      supply_drop.lock
       transaction do
         on_rollback { supply_drop.unlock }
         supply_drop.prepare
-        supply_drop.lock
         update_code
         supply_drop.apply
         supply_drop.unlock
