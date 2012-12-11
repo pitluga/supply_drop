@@ -68,7 +68,7 @@ module SupplyDrop
           when :rekey_packet_limit      then nil # not supported
           when :timeout                 then opt('ConnectTimeout', value.to_i)
           when :user                    then "-l #{value}"
-          when :user_known_hosts_file   then opt('UserKnownHostsFile', value)
+          when :user_known_hosts_file   then multi_opt('UserKnownHostsFile', value)
           when :verbose                 then opt('LogLevel', interpret_log_level(value))
           end
         end.compact
@@ -80,6 +80,12 @@ module SupplyDrop
 
       def opt(option_name, option_value)
         "-o #{option_name}='#{option_value}'"
+      end
+
+      def multi_opt(option_name, option_values)
+        [option_values].flatten.map do |value|
+          opt(option_name, value)
+        end.join(' ')
       end
 
       #

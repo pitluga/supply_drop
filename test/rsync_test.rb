@@ -89,9 +89,10 @@ class RsyncTest < Test::Unit::TestCase
       :hmac, 'hmac-sha2-256',
       :host_key, 'ecdsa-sha2-nistp256-cert-v01@openssh.com',
       :rekey_limit, 2*1024*1024,
-      :verbose, :debug
+      :verbose, :debug,
+      :user_known_hosts_file, ['~/.ssh/known_hosts', '~/.ssh/production_known_hosts']
     ])
-    expecting = %q[-e "ssh -o PasswordAuthentication='no' -o PubkeyAuthentication='yes' -o HostbasedAuthentication='no' -o Ciphers='aes256-cbc,aes192-cbc' -o MACs='hmac-sha2-256' -o HostKeyAlgorithms='ecdsa-sha2-nistp256-cert-v01@openssh.com' -o RekeyLimit='2M' -o LogLevel='DEBUG'"]
+    expecting = %q[-e "ssh -o PasswordAuthentication='no' -o PubkeyAuthentication='yes' -o HostbasedAuthentication='no' -o Ciphers='aes256-cbc,aes192-cbc' -o MACs='hmac-sha2-256' -o HostKeyAlgorithms='ecdsa-sha2-nistp256-cert-v01@openssh.com' -o RekeyLimit='2M' -o UserKnownHostsFile='~/.ssh/known_hosts' -o UserKnownHostsFile='~/.ssh/production_known_hosts' -o LogLevel='DEBUG'"]
     assert_equal expecting, options
   end
 
