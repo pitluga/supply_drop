@@ -4,13 +4,16 @@ module SupplyDrop
     def rsync
       SupplyDrop::Util.thread_pool_size = puppet_parallel_rsync_pool_size
       servers = SupplyDrop::Util.optionally_async(find_servers_for_task(current_task), puppet_parallel_rsync)
+      overrides = {}
+      overrides[:user] = fetch(:user, ENV['USER'])
+      overrides[:port] = fetch(:port) if exists?(:port)
       failed_servers = servers.map do |server|
         rsync_cmd = SupplyDrop::Rsync.command(
           puppet_source,
           SupplyDrop::Rsync.remote_address(server.user || fetch(:user, ENV['USER']), server.host, puppet_destination),
           :delete => true,
           :excludes => puppet_excludes,
-          :ssh => ssh_options.merge(server.options[:ssh_options]||{})
+          :ssh => ssh_options.merge(server.options[:ssh_options]||{}).merge(overrides)
         )
         logger.debug rsync_cmd
         server.host unless system rsync_cmd
