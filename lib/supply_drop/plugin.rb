@@ -37,14 +37,14 @@ module SupplyDrop
 
     def lock
       if should_lock?
-        run <<-GETLOCK
-if [ ! -f #{puppet_lock_file} ]; then
-    touch #{puppet_lock_file};
-else
+        run <<-CHECK_LOCK
+if [ -f #{puppet_lock_file} ]; then
     stat -c "#{red_text("Puppet in progress, #{puppet_lock_file} owned by %U since %x")}" #{puppet_lock_file} >&2;
     exit 1;
 fi
-        GETLOCK
+        CHECK_LOCK
+
+        run "touch #{puppet_lock_file}"
       end
     end
 
