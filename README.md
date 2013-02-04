@@ -37,7 +37,7 @@ Applies the pending changes to all the servers.
 
 Locally syntax checks all the puppet files and erb templates. Requires you to have puppet installed locally.
 
-    cap puppet:remove_lock
+    cap puppet:unlock
 
 Remove any stale lock files created by supply_drop when locking is used and something went wrong.
 
