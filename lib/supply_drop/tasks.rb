@@ -42,7 +42,7 @@ Capistrano::Configuration.instance.load do
     desc "checks the syntax of all *.pp and *.erb files"
     task :syntax_check do
       checker = SupplyDrop::SyntaxChecker.new(puppet_source)
-      logger.info "Sytax Checking..."
+      logger.info "Syntax Checking..."
       errors = false
       checker.validate_puppet_files.each do |file, error|
         logger.important "Puppet error: #{file}"
