@@ -37,6 +37,21 @@ Capistrano::Configuration.instance.load do
         run "mkdir -p #{puppet_destination}"
         run "#{sudo} yum -y install puppet rsync"
       end
+
+      namespace :puppetlabs do
+
+        desc "setup the puppetlabs repo, then install via the normal method"
+        task :ubuntu do
+          run "echo deb http://apt.puppetlabs.com/ $(lsb_release -sc) main | #{sudo} tee /etc/apt/sources.list.d/puppet.list"
+          run "#{sudo} apt-key adv --keyserver keyserver.ubuntu.com --recv 4BD6EC30"
+          puppet.bootstrap.ubuntu
+        end
+
+        desc "setup the puppetlabs repo, then install via the normal method"
+        task :redhat do
+          logger.info "PuppetLabs::RedHat bootstrap is not implemented yet"
+        end
+      end
     end
 
     desc "checks the syntax of all *.pp and *.erb files"
