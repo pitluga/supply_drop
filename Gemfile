@@ -1,4 +1,4 @@
-source :rubygems
+source 'https://rubygems.org'
 
 gem 'capistrano', '2.11.2'
 gem 'vagrant', '0.9.7'

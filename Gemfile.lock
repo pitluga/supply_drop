@@ -1,5 +1,5 @@
 GEM
-  remote: http://rubygems.org/
+  remote: https://rubygems.org/
   specs:
     archive-tar-minitar (0.5.2)
     capistrano (2.11.2)
