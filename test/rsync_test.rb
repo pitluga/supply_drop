@@ -55,6 +55,11 @@ class RsyncTest < Test::Unit::TestCase
     assert_equal 'rsync -az . foo', command
   end
 
+  def test_allow_setting_paranoid_to_false
+    command = SupplyDrop::Rsync.command('.', 'foo', :ssh => { :paranoid => false })
+    assert_equal 'rsync -az -e "ssh -o StrictHostKeyChecking=\'no\'" . foo', command
+  end
+
   def test_remote_address_concatinates_things_correctly
     assert_equal "user@box.local:/tmp", SupplyDrop::Rsync.remote_address('user', 'box.local', '/tmp')
   end

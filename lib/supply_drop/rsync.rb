@@ -36,14 +36,14 @@ module SupplyDrop
       #
       def ssh_options(options)
         mapped_options = options.map do |key, value|
-          next unless value
+          next if value.nil?
 
           case key
           when :auth_methods            then opt_auth_methods(value)
           when :bind_address            then opt('BindAddress', value)
           when :compression             then opt('Compression', value ? 'yes' : 'no')
           when :compression_level       then opt('CompressionLevel', value.to_i)
-          when :config                  then "-F '#{value}'"
+          when :config                  then value ? "-F '#{value}'" : nil
           when :encryption              then opt('Ciphers', [value].flatten.join(','))
           when :forward_agent           then opt('ForwardAgent', value)
           when :global_known_hosts_file then opt('GlobalKnownHostsFile', value)
