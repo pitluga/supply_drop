@@ -91,6 +91,19 @@ Capistrano::Configuration.instance.load do
       end
     end
 
+    desc "an atomic way to noop and apply changes while maintaining a lock"
+    task :noop_apply, :except => { :nopuppet => true } do
+      supply_drop.lock
+      transaction do
+        on_rollback { supply_drop.unlock }
+        supply_drop.prepare
+        update_code
+        supply_drop.noop
+        supply_drop.apply if Capistrano::CLI.ui.agree("Apply? (yes/no) ")
+        supply_drop.unlock
+      end
+    end
+
     desc "applies the current puppet config to the server"
     task :apply, :except => { :nopuppet => true } do
       supply_drop.lock
