@@ -18,34 +18,58 @@ Capistrano::Configuration.instance.load do
     namespace :bootstrap do
       desc "installs puppet via rubygems on an osx host"
       task :osx do
-        if fetch(:use_sudo, true)
-          run "#{sudo} gem install puppet --no-ri --no-rdoc"
-        else
-          run "gem install puppet --no-ri --no-rdoc"
-        end
+        run "#{try_sudo}gem install puppet --no-ri --no-rdoc"
       end
 
       desc "installs puppet via apt on an ubuntu host"
       task :ubuntu do
         run "mkdir -p #{puppet_destination}"
-        run "#{sudo} apt-get update"
-        run "#{sudo} apt-get install -y puppet rsync"
+        run "#{try_sudo} apt-get update"
+        run "#{try_sudo} apt-get install -y puppet rsync"
+      end
+
+      desc "installs puppet via apt on an debian host"
+      task :debian do
+        run "mkdir -p #{puppet_destination}"
+        run "#{try_sudo} apt-get update"
+        run "#{try_sudo} apt-get install -y puppet rsync"
       end
 
       desc "installs puppet via yum on a centos/red hat host"
       task :redhat do
         run "mkdir -p #{puppet_destination}"
-        run "#{sudo} yum -y install puppet rsync"
+        run "#{try_sudo} yum -y install puppet rsync"
       end
 
       namespace :puppetlabs do
 
         desc "setup the puppetlabs repo, then install via the normal method"
         task :ubuntu do
-          run "echo deb http://apt.puppetlabs.com/ $(lsb_release -sc) main | #{sudo} tee /etc/apt/sources.list.d/puppet.list"
-          run "echo deb http://apt.puppetlabs.com/ $(lsb_release -sc) dependencies | #{sudo} tee -a /etc/apt/sources.list.d/puppet.list"
-          run "#{sudo} apt-key adv --keyserver keyserver.ubuntu.com --recv 4BD6EC30"
+          run "echo deb http://apt.puppetlabs.com/ $(lsb_release -sc) main | #{try_sudo} tee /etc/apt/sources.list.d/puppet.list"
+          run "echo deb http://apt.puppetlabs.com/ $(lsb_release -sc) dependencies | #{try_sudo} tee -a /etc/apt/sources.list.d/puppet.list"
+          run "#{try_sudo} apt-key adv --keyserver keyserver.ubuntu.com --recv 4BD6EC30"
           puppet.bootstrap.ubuntu
+        end
+
+        desc "setup the puppetlabs repo, then install via the normal method"
+        task :debian do
+          case capture("cat /etc/debian_version")
+          when /(6(\.\d){1,2}|squeeze)/
+            deb_ver = "squeeze"
+          when /(7(\.\d){1,2}|wheezy)/
+            deb_ver = "wheezy"
+          when /(8(\.\d){1,2}|jessie)/
+            deb_ver = "testing"
+          else
+            deb_ver = false
+          end
+
+          if deb_ver
+            run "echo deb http://apt.puppetlabs.com/ #{deb_ver} main | #{try_sudo} tee /etc/apt/sources.list.d/puppet.list"
+            run "echo deb http://apt.puppetlabs.com/ #{deb_ver} dependencies | #{try_sudo} tee -a /etc/apt/sources.list.d/puppet.list"
+            run "#{try_sudo} apt-key adv --keyserver keyserver.ubuntu.com --recv 4BD6EC30"
+            puppet.bootstrap.debian
+          end
         end
 
         desc "setup the puppetlabs repo, then install via the normal method"
