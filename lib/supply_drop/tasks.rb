@@ -69,6 +69,8 @@ Capistrano::Configuration.instance.load do
             run "echo deb http://apt.puppetlabs.com/ #{deb_ver} dependencies | #{try_sudo} tee -a /etc/apt/sources.list.d/puppet.list"
             run "#{try_sudo} apt-key adv --keyserver keyserver.ubuntu.com --recv 4BD6EC30"
             puppet.bootstrap.debian
+          else
+            logger.info "This debian version is currently not supported by Puppetlabs."
           end
         end
 
