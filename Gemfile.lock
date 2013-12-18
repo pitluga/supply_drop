@@ -2,31 +2,31 @@ GEM
   remote: https://rubygems.org/
   specs:
     archive-tar-minitar (0.5.2)
-    capistrano (2.11.2)
-      highline
-      net-scp (>= 1.0.0)
-      net-sftp (>= 2.0.0)
-      net-ssh (>= 2.0.14)
-      net-ssh-gateway (>= 1.1.0)
-    childprocess (0.3.1)
-      ffi (~> 1.0.6)
+    capistrano (3.0.1)
+      i18n
+      rake (>= 10.0.0)
+      sshkit (>= 0.0.23)
+    childprocess (0.3.9)
+      ffi (~> 1.0, >= 1.0.11)
     erubis (2.7.0)
-    facter (1.6.5)
-    ffi (1.0.11)
-    highline (1.6.11)
-    i18n (0.6.0)
-    json (1.5.4)
+    facter (1.7.4)
+    ffi (1.9.3)
+    i18n (0.6.9)
+    json (1.5.5)
     log4r (1.1.10)
     net-scp (1.0.4)
       net-ssh (>= 1.99.1)
-    net-sftp (2.0.5)
-      net-ssh (>= 2.0.9)
     net-ssh (2.2.2)
-    net-ssh-gateway (1.1.0)
-      net-ssh (>= 1.99.1)
     puppet (2.7.1)
       facter (>= 1.5.1)
-    rake (0.8.7)
+    rake (10.1.0)
+    sshkit (1.1.0)
+      net-scp
+      net-ssh
+      term-ansicolor
+    term-ansicolor (1.2.2)
+      tins (~> 0.8)
+    tins (0.13.1)
     vagrant (0.9.7)
       archive-tar-minitar (= 0.5.2)
       childprocess (~> 0.3.1)
@@ -41,7 +41,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  capistrano (= 2.11.2)
+  capistrano (= 3.0.1)
   puppet (= 2.7.1)
-  rake (= 0.8.7)
+  rake (>= 10.0.0)
   vagrant (= 0.9.7)
