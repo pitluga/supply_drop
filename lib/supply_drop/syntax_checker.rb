@@ -6,7 +6,7 @@ module SupplyDrop
 
     def validate_puppet_files
       Dir.glob("#{@path}/**/*.pp").map do |puppet_file|
-        output = `puppet parser validate #{puppet_file}`
+        output = `puppet parser validate #{puppet_file} 2>&1`
         $?.to_i == 0 ? nil : [puppet_file, output]
       end.compact
     end

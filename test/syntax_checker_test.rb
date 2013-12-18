@@ -12,7 +12,7 @@ class SyntaxCheckerTest < Test::Unit::TestCase
     assert_match %r[expected '\}'], error
   end
 
-  def test_synatx_checks_erb_files
+  def test_syntax_checks_erb_files
     checker = SupplyDrop::SyntaxChecker.new(File.expand_path('../files', __FILE__))
     errors = checker.validate_templates
     assert_equal 1, errors.count

@@ -87,14 +87,6 @@ sets the maximum number of rsync commands that are run concurrently
 when true, will syntax check your puppet files and erb templates before rsyncing them to your servers. This is an
 experimental feature and is quite slow at the moment.
 
-    set :puppet_stream_output, false
-
-will write the incremental output from the hosts to the screen instead of waiting until complete and printing by host.
-
-    set :puppet_write_to_file, nil
-
-a file to additionally write puppet output to, useful for large noops with small scrollbacks.
-
     set :puppet_runner, nil
 
 allows you to specify the user to execute the puppet command as. Like running sudo -u puppet args from the command line.
@@ -126,6 +118,7 @@ If you write anything complicated, write a test for it. Test that your changes w
 * Mike Pilat [mikepilat](https://github.com/mikepilat "github")
 * Dan Manges [dan-manges](https://github.com/dan-manges "github") (one soda's worth)
 * Brian Cosgrove [cosgroveb](https://github.com/cosgroveb "github")
+* Troy Howard [thoward](https://github.com/thoward "github")
 
 Copyright (c) 2012-2013 Tony Pitluga
 
