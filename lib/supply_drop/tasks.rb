@@ -16,33 +16,33 @@ Capistrano::Configuration.instance.load do
     set :puppet_lock_file, '/tmp/puppet.lock'
 
     namespace :bootstrap do
-      desc "installs puppet via rubygems on an osx host"
+      desc "installs puppet and hiera via rubygems on an osx host"
       task :osx do
         if fetch(:use_sudo, true)
-          run "#{sudo} gem install puppet --no-ri --no-rdoc"
+          run "#{sudo} gem install puppet hiera --no-ri --no-rdoc"
         else
           run "gem install puppet --no-ri --no-rdoc"
         end
       end
 
-      desc "installs puppet via apt on a debian host"
+      desc "installs puppet and hiera via apt on a debian host"
       task :debian do
         run "mkdir -p #{puppet_destination}"
         run "#{sudo} apt-get update"
-        run "#{sudo} apt-get install -y puppet rsync"
+        run "#{sudo} apt-get install -y puppet ruby-hiera rsync"
       end
 
-      desc "installs puppet via apt on an ubuntu host"
+      desc "installs puppet and hiera via apt on an ubuntu host"
       task :ubuntu do
         run "mkdir -p #{puppet_destination}"
         run "#{sudo} apt-get update"
-        run "#{sudo} apt-get install -y puppet rsync"
+        run "#{sudo} apt-get install -y puppet hiera rsync"
       end
 
-      desc "installs puppet via yum on a centos/red hat host"
+      desc "installs puppet and hiera via yum on a centos/red hat host"
       task :redhat do
         run "mkdir -p #{puppet_destination}"
-        run "#{sudo} yum -y install puppet rsync"
+        run "#{sudo} yum -y install puppet hiera rsync"
       end
 
       namespace :puppetlabs do
