@@ -25,6 +25,13 @@ Capistrano::Configuration.instance.load do
         end
       end
 
+      desc "installs puppet via apt on a debian host"
+      task :debian do
+        run "mkdir -p #{puppet_destination}"
+        run "#{sudo} apt-get update"
+        run "#{sudo} apt-get install -y puppet rsync"
+      end
+
       desc "installs puppet via apt on an ubuntu host"
       task :ubuntu do
         run "mkdir -p #{puppet_destination}"
