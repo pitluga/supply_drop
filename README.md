@@ -119,6 +119,10 @@ You'll need to do this if you see errors like this:
 
     Could not parse for environment production: Could not find file /home/.../supply_drop/apply.pp
 
+### Hiera support
+
+Most distributions don't package versions of puppet that are new enough to support hiera. Use the puppetlabs namespaced bootstrap tasks above to make sure you get hiera support.
+
 ### How to contribute
 
 If you write anything complicated, write a test for it. Test that your changes work using vagrant. Send a pull request. Easy peezy.
