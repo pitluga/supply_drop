@@ -19,11 +19,17 @@ then at the top of your deploy.rb
 
 ### Tasks
 
+    cap puppet:bootstrap:debian
     cap puppet:bootstrap:ubuntu
     cap puppet:bootstrap:osx
     cap puppet:bootstrap:redhat
 
 This does a simple apt-get install of puppet on the target servers.
+
+    cap puppet:bootstrap:puppetlabs:debian
+    cap puppet:bootstrap:puppetlabs:ubuntu
+
+This is the same as above, but it grabs the most recent versions of puppet via apt repositories provided by puppetlabs.
 
     cap puppet:noop
 
