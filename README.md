@@ -19,11 +19,17 @@ then at the top of your deploy.rb
 
 ### Tasks
 
+    cap puppet:bootstrap:debian
     cap puppet:bootstrap:ubuntu
     cap puppet:bootstrap:osx
     cap puppet:bootstrap:redhat
 
 This does a simple apt-get install of puppet on the target servers.
+
+    cap puppet:bootstrap:puppetlabs:debian
+    cap puppet:bootstrap:puppetlabs:ubuntu
+
+This is the same as above, but it grabs the most recent versions of puppet via apt repositories provided by puppetlabs.
 
     cap puppet:noop
 
@@ -112,6 +118,10 @@ The default behavior of supply_drop includes `apply` keyword in its commands, bu
 You'll need to do this if you see errors like this:
 
     Could not parse for environment production: Could not find file /home/.../supply_drop/apply.pp
+
+### Hiera support
+
+Most distributions don't package versions of puppet that are new enough to support hiera. Use the puppetlabs namespaced bootstrap tasks above to make sure you get hiera support.
 
 ### How to contribute
 

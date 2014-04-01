@@ -14,6 +14,7 @@ Capistrano::Configuration.instance.load do
     set :puppet_write_to_file, nil
     set :puppet_runner, nil
     set :puppet_lock_file, '/tmp/puppet.lock'
+    set :hiera_package, nil
 
     namespace :bootstrap do
       desc "installs puppet and hiera via rubygems on an osx host"
@@ -25,34 +26,43 @@ Capistrano::Configuration.instance.load do
         end
       end
 
-      desc "installs puppet and hiera via apt on a debian host"
+      desc "installs puppet via apt on a debian host"
       task :debian do
         run "mkdir -p #{puppet_destination}"
         run "#{sudo} apt-get update"
-        run "#{sudo} apt-get install -y puppet ruby-hiera rsync"
+        run "#{sudo} apt-get install -y puppet #{hiera_package} rsync"
       end
 
-      desc "installs puppet and hiera via apt on an ubuntu host"
+      desc "installs puppet via apt on an ubuntu host"
       task :ubuntu do
         run "mkdir -p #{puppet_destination}"
         run "#{sudo} apt-get update"
-        run "#{sudo} apt-get install -y puppet hiera rsync"
+        run "#{sudo} apt-get install -y puppet #{hiera_package} rsync"
       end
 
-      desc "installs puppet and hiera via yum on a centos/red hat host"
+      desc "installs puppet via yum on a centos/red hat host"
       task :redhat do
         run "mkdir -p #{puppet_destination}"
-        run "#{sudo} yum -y install puppet hiera rsync"
+        run "#{sudo} yum -y install puppet rsync"
       end
 
       namespace :puppetlabs do
-
         desc "setup the puppetlabs repo, then install via the normal method"
         task :ubuntu do
+          set :hiera_package, "hiera"
           run "echo deb http://apt.puppetlabs.com/ $(lsb_release -sc) main | #{sudo} tee /etc/apt/sources.list.d/puppet.list"
           run "echo deb http://apt.puppetlabs.com/ $(lsb_release -sc) dependencies | #{sudo} tee -a /etc/apt/sources.list.d/puppet.list"
           run "#{sudo} apt-key adv --keyserver keyserver.ubuntu.com --recv 4BD6EC30"
           puppet.bootstrap.ubuntu
+        end
+
+        desc "setup the puppetlabs repo, then install via the normal method"
+        task :debian do
+          set :hiera_package, "hiera"
+          run "echo deb http://apt.puppetlabs.com/ $(lsb_release -sc) main | #{sudo} tee /etc/apt/sources.list.d/puppet.list"
+          run "echo deb http://apt.puppetlabs.com/ $(lsb_release -sc) dependencies | #{sudo} tee -a /etc/apt/sources.list.d/puppet.list"
+          run "#{sudo} apt-key adv --keyserver keyserver.ubuntu.com --recv 4BD6EC30"
+          puppet.bootstrap.debian
         end
 
         desc "setup the puppetlabs repo, then install via the normal method"
