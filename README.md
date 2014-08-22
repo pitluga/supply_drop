@@ -16,43 +16,38 @@ or with Bundler
 
 then at the top of your deploy.rb
 
-    require 'rubygems'
     require 'supply_drop'
 
 ### Tasks
 
-    cap puppet:bootstrap:debian
-    cap puppet:bootstrap:ubuntu
-    cap puppet:bootstrap:osx
-    cap puppet:bootstrap:redhat
+    cap staging puppet:bootstrap:debian
+    cap staging puppet:bootstrap:ubuntu
+    cap staging puppet:bootstrap:osx
+    cap staging puppet:bootstrap:redhat
 
 This does a simple apt-get install of puppet on the target servers.
 
-    cap puppet:bootstrap:puppetlabs:debian
-    cap puppet:bootstrap:puppetlabs:ubuntu
+    cap staging puppet:bootstrap:puppetlabs:debian
+    cap staging puppet:bootstrap:puppetlabs:ubuntu
 
 This is the same as above, but it grabs the most recent versions of puppet via apt repositories provided by puppetlabs.
 
-    cap puppet:noop
+    cap staging puppet:noop
 
 This will show you a list of the pending changes to be applied server-by-server.
 
-    cap puppet:apply
+    cap staging puppet:apply
 
 Applies the pending changes to all the servers.
 
-    cap puppet:syntax_check
-
-Locally syntax checks all the puppet files and erb templates. Requires you to have puppet installed locally.
-
-    cap puppet:unlock
+    cap staging puppet:unlock
 
 Remove any stale lock files created by supply_drop when locking is used and something went wrong.
 
 
-You can specify that one of your servers should not be puppeted by setting the :nopuppet flag to true, like so. It will then be skipped by all the above commands.
+Only servers in the puppet role will be puppeted.
 
-    role :weird_thing, '33.33.33.33', :nopuppet => true
+    role :puppet, '33.33.33.33'
 
 ### Variables
 
@@ -89,15 +84,6 @@ determines whether the rsync commands for multiple servers are run in parallel t
     set :puppet_parallel_rsync_pool_size, 10
 
 sets the maximum number of rsync commands that are run concurrently
-
-    set :puppet_syntax_check, false
-
-when true, will syntax check your puppet files and erb templates before rsyncing them to your servers. This is an
-experimental feature and is quite slow at the moment.
-
-    set :puppet_runner, nil
-
-allows you to specify the user to execute the puppet command as. Like running sudo -u puppet args from the command line.
 
     set :puppet_lock_file, '/tmp/puppet.lock'
 
