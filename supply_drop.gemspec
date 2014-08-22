@@ -10,5 +10,5 @@ Gem::Specification.new do |s|
   s.homepage = "http://github.com/pitluga/supply_drop"
   s.license = "MIT"
   s.files = FileList["README.md", "Rakefile", "lib/**/*.rb"]
-  s.add_dependency('capistrano', '>= 2.5.21')
+  s.add_dependency('capistrano', '>= 3.0.1')
 end

@@ -1,21 +1,2 @@
-# this is all to get vagrant working with capistrano
-vagrant_gem = `gem which vagrant`.chomp
-ssh_options[:keys] =  File.expand_path('../../keys/vagrant', vagrant_gem)
-ssh_options[:paranoid] = false
-ssh_options[:keys_only] = true
-ssh_options[:user_known_hosts_file] = []
-ssh_options[:config] = false
-set :user, 'vagrant'
-
-
-$:.unshift File.expand_path('../../../lib', __FILE__) # in your Capfile, this would likely be "require 'rubygems'"
-require 'supply_drop'
-
-set :puppet_destination, "~/supply_drop"
-set :puppet_command, "puppet"
-set :puppet_stream_output, true
-set :puppet_syntax_check, false
-set :puppet_write_to_file, "puppet_output.txt"
-
-server '33.33.33.10', :web, :app
-role :db,  '33.33.33.11', :nopuppet => true
+require 'capistrano/setup'
+require 'capistrano/deploy'

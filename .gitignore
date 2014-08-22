@@ -2,3 +2,4 @@
 *.gem
 *.swp
 **/*/puppet_output.txt
+Gemfile.lock
