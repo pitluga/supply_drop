@@ -1,7 +1,7 @@
 require 'test/unit'
-require File.expand_path('../../lib/supply_drop/util', __FILE__)
-require File.expand_path('../../lib/supply_drop/async_enumerable', __FILE__)
-require File.expand_path('../../lib/supply_drop/thread_pool', __FILE__)
+require File.expand_path('../../lib/capistrano/supply_drop/util', __FILE__)
+require File.expand_path('../../lib/capistrano/supply_drop/async_enumerable', __FILE__)
+require File.expand_path('../../lib/capistrano/supply_drop/thread_pool', __FILE__)
 
 class AsyncTest < Test::Unit::TestCase
   def teardown
