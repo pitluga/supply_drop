@@ -14,9 +14,9 @@ or with Bundler
 
     gem 'supply_drop'
 
-then at the top of your deploy.rb
+then in your Capfile
 
-    require 'supply_drop'
+    require 'capistrano/supply_drop'
 
 ### Tasks
 
@@ -117,6 +117,7 @@ If you write anything complicated, write a test for it. Test that your changes w
 * Dan Manges [dan-manges](https://github.com/dan-manges "github") (one soda's worth)
 * Brian Cosgrove [cosgroveb](https://github.com/cosgroveb "github")
 * Troy Howard [thoward](https://github.com/thoward "github")
+* Prachetas Prabhu [prachetasp](https://github.com/prachetasp "github")
 
 Copyright (c) 2012-2013 Tony Pitluga
 

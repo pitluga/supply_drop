@@ -15,8 +15,7 @@ ssh_options[:config] = false
 set :user, 'vagrant'
 
 
-$:.unshift File.expand_path('../../../lib', __FILE__) # in your Capfile, this would likely be "require 'rubygems'"
-require 'supply_drop'
+require_relative 'capistrano/supply_drop'
 
 # We don't have the gems installed, so we need to tell ruby where to find the code
 # for puppet, and facter
