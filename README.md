@@ -14,7 +14,7 @@ or with Bundler
 
     gem 'supply_drop'
 
-then at the top of your deploy.rb
+then add the following to your Capfile
 
     require 'supply_drop'
 
