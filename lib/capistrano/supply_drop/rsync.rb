@@ -64,7 +64,7 @@ module SupplyDrop
           when :password                then nil # not supported
           when :port                    then "-p #{value.to_i}"
           when :properties              then nil # not applicable
-          when :proxy                   then nil # not applicable
+          when :proxy                   then opt('ProxyCommand', value.command_line)
           when :rekey_blocks_limit      then nil # not supported
           when :rekey_limit             then opt('RekeyLimit', reverse_interpret_size(value))
           when :rekey_packet_limit      then nil # not supported
