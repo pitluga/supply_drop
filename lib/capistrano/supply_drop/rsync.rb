@@ -2,21 +2,23 @@ module SupplyDrop
   class Rsync
     class << self
       def command(from, to, options={})
-        flags = ['-az']
-        flags << '--delete' if options[:delete]
-        flags << excludes(options[:excludes]) if options.has_key?(:excludes)
-        flags << ssh_options(options[:ssh]) if options.has_key?(:ssh)
+        # Other methods rely upon options[:ssh] not being nil
+        options.merge!(:ssh => {}) unless options[:ssh]
 
-        "rsync #{flags.compact.join(' ')} #{from} #{to}"
+        # --delete will remove files on 'to' that don't exist on 'from'
+        flags = ['-az', '--delete']
+        flags << [options[:excludes]].flatten.compact.map { |p| "--exclude=#{p}" }
+        flags << ssh_options(options[:ssh])
+
+        # While extra whitespace won't affect the rsync command it does break tests
+        flags.reject!(&:empty?)
+
+        "rsync #{flags.join(' ')} #{from} #{remote_address(to, options[:ssh])}"
       end
 
-      def remote_address(user, host, path)
-        user_with_host = [user, host].compact.join('@')
-        [user_with_host, path].join(':')
-      end
-
-      def excludes(patterns)
-        [patterns].flatten.map { |p| "--exclude=#{p}" }
+      def remote_address(to, ssh_opts)
+        user_with_host = [ssh_opts[:user], ssh_opts[:hostname]].compact.join('@')
+        [user_with_host, to].reject(&:empty?).join(':')
       end
 
       #
@@ -73,7 +75,7 @@ module SupplyDrop
           end
         end.compact
 
-        %[-e "ssh #{mapped_options.join(' ')}"] unless mapped_options.empty?
+        mapped_options.empty? ? mapped_options : %[-e "ssh #{mapped_options.join(' ')}"]
       end
 
       private
