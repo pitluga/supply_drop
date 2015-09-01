@@ -158,19 +158,20 @@ namespace :puppet do
   def update_code
     SupplyDrop::Util.thread_pool_size = fetch(:puppet_parallel_rsync_pool_size)
     servers = SupplyDrop::Util.optionally_async(roles(:puppet), fetch(:puppet_parallel_rsync))
-    global_overrides = {}
-    global_overrides[:user] = fetch(:user, ENV['USER'])
-    global_overrides[:port] = fetch(:port) if any?(:port)
     failed_servers = servers.map do |server|
-      server_overrides = {}
-      server_overrides[:user] = server.user if server.user
-      server_overrides[:port] = server.port if server.port
+      # We have to manually build the ssh_options because we cannot use sshkit
+      # for parallelizing local commands. Instead we use threads
+      overrides = {
+        :hostname => server.hostname,
+        :port     => server.port ||= fetch(:port),
+        :user     => server.user ||= fetch(:user, ENV['PUPPET_USER'])
+      }.select {|_,v| v }
+      puts overrides
       rsync_cmd = SupplyDrop::Rsync.command(
         fetch(:puppet_source),
-        SupplyDrop::Rsync.remote_address(server.user || fetch(:user, ENV['USER']), server.hostname, fetch(:puppet_destination)),
-        :delete => true,
+        fetch(:puppet_destination),
         :excludes => fetch(:puppet_excludes),
-        :ssh => (fetch(:ssh_options) || {}).merge(server.properties.ssh_options||{}).merge(global_overrides.merge(server_overrides))
+        :ssh      => fetch(:ssh_options, {}).merge(server.ssh_options||{}).merge(overrides)
       )
       info rsync_cmd
       server.hostname unless system rsync_cmd
