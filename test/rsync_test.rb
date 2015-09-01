@@ -1,5 +1,5 @@
 require 'test/unit'
-require File.expand_path('../../lib/supply_drop/rsync', __FILE__)
+require File.expand_path('../../lib/capistrano/supply_drop/rsync', __FILE__)
 
 if RUBY_VERSION >= '1.9'
   SimpleOrderedHash = ::Hash

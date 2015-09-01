@@ -6,8 +6,10 @@ ssh_options[:user_known_hosts_file] = []
 ssh_options[:config] = false
 set :user, 'ubuntu'
 
-
-$:.unshift File.expand_path('../../../lib', __FILE__) # in your Capfile, this would likely be "require 'rubygems'"
-require 'supply_drop'
+require 'capistrano/supply_drop'
 
 server 'your ec2 server', :web, :app, :db
+
+# Remember to update PATH here substituting /opt/vagrant_ruby/bin
+# with the path to your puppet executable
+# set :default_env, { 'PATH' => "/opt/vagrant_ruby/bin:$PATH" }

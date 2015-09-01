@@ -1,4 +1,5 @@
 namespace :load do
+
   task :defaults do
     set :puppet_source, '.'
     set :puppet_destination, '/var/tmp/supply_drop'
