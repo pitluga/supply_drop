@@ -1,5 +1,3 @@
-require 'rake'
-
 Gem::Specification.new do |s|
   s.name = "supply_drop"
   s.summary = "Masterless puppet with capistrano"
@@ -9,6 +7,7 @@ Gem::Specification.new do |s|
   s.email = ["tony.pitluga@gmail.com", "paul.t.hinze@gmail.com"]
   s.homepage = "http://github.com/pitluga/supply_drop"
   s.license = "MIT"
-  s.files = FileList["README.md", "Rakefile", "lib/**/*.rb"]
+  s.files = ['README.md', 'Rakefile'] + Dir['lib/**/*.rb']
   s.add_dependency('capistrano', '>= 3.0.1', '< 4.0.0')
+  s.add_development_dependency 'rake'
 end
