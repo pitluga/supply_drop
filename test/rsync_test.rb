@@ -21,6 +21,11 @@ class RsyncTest < Test::Unit::TestCase
     assert_equal 'rsync -az --delete --exclude=.git bar foo', command
   end
 
+  def test_allows_specifying_an_include
+    command = SupplyDrop::Rsync.command('bar', 'foo', :includes => 'secrets/staging')
+    assert_equal 'rsync -az --delete --include=secrets/staging bar foo', command
+  end
+
   def test_ssh_options_keys_only_lists_existing_files
     command = SupplyDrop::Rsync.command('.', 'foo', :ssh => { :keys => [__FILE__, "#{__FILE__}dadijofs"] })
     assert_match /-i '#{__FILE__}'/, command
