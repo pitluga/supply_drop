@@ -7,6 +7,7 @@ module SupplyDrop
 
         # --delete will remove files on 'to' that don't exist on 'from'
         flags = ['-az', '--delete']
+        flags << [options[:includes]].flatten.compact.map { |p| "--include=#{p}" }
         flags << [options[:excludes]].flatten.compact.map { |p| "--exclude=#{p}" }
         flags << ssh_options(options[:ssh])
 

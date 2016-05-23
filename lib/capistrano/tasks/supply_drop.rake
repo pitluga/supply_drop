@@ -8,6 +8,7 @@ namespace :load do
     set :puppet_parameters, lambda { fetch(:puppet_verbose) ? '--debug --trace --color false puppet.pp' : '--color false puppet.pp' }
     set :puppet_verbose, false
     set :puppet_excludes, %w(.git .svn)
+    set :puppet_includes, %w()
     set :puppet_parallel_rsync, true
     set :puppet_parallel_rsync_pool_size, 10
     set :puppet_runner, nil
@@ -171,6 +172,7 @@ namespace :puppet do
         fetch(:puppet_source),
         fetch(:puppet_destination),
         :excludes => fetch(:puppet_excludes),
+        :includes => fetch(:puppet_includes),
         :ssh      => fetch(:ssh_options, {}).merge(server.ssh_options||{}).merge(overrides)
       )
       info rsync_cmd
