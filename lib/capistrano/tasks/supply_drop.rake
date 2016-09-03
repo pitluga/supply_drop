@@ -157,8 +157,12 @@ namespace :puppet do
 
   def update_code
     SupplyDrop::Util.thread_pool_size = fetch(:puppet_parallel_rsync_pool_size)
-    servers = SupplyDrop::Util.optionally_async(roles(:puppet), fetch(:puppet_parallel_rsync))
-    failed_servers = servers.map do |server|
+    servers = Capistrano::Configuration.env.filter(roles(:puppet))
+    servers = SupplyDrop::Util.optionally_async(servers, fetch(:puppet_parallel_rsync))
+
+    failed_servers = []
+
+    servers.map do |server|
       # We have to manually build the ssh_options because we cannot use sshkit
       # for parallelizing local commands. Instead we use threads
       overrides = {
@@ -166,16 +170,19 @@ namespace :puppet do
         :port     => server.port ||= fetch(:port),
         :user     => server.user ||= fetch(:user, ENV['PUPPET_USER'])
       }.select {|_,v| v }
-      puts overrides
+
       rsync_cmd = SupplyDrop::Rsync.command(
         fetch(:puppet_source),
         fetch(:puppet_destination),
         :excludes => fetch(:puppet_excludes),
         :ssh      => fetch(:ssh_options, {}).merge(server.ssh_options||{}).merge(overrides)
       )
+
       info rsync_cmd
-      server.hostname unless system rsync_cmd
-    end.compact
+      success = system rsync_cmd
+
+      failed_servers.push(server.hostname) unless success
+    end
 
     raise "rsync failed on #{failed_servers.join(',')}" if failed_servers.any?
   end
